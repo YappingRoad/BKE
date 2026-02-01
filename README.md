@@ -4,7 +4,7 @@ BKE (Bill Kolumbert Engine) is a web-based **2D** Game Engine that uses TypeScri
 It can compile to web, and can run in Electron (which can run on Windows, macOS, and Linux).
 
 ## Notes
-It isn't in a usable state at the moment in terms of creating new projects as I built it for the WIP game I am working on called Bill Kolumbert.
+It isn't in a usable state at the moment in terms of creating new projects as I built it for the WIP game I am working on with my friends called Bill Kolumbert.
 
 So basically, don't expect incredible code quality, and theres probably alot of bugs in the code.
 
