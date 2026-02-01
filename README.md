@@ -32,4 +32,6 @@ It isn't in a usable state at the moment in terms of creating new projects as I 
 
 I built it as I didn't really like other 2D engines and wanted the flexibility of the web, and the flexibility of being able to add features to my own engine.
 
-I may make a template project in time so the project is actually usable. 
+I may make a template project in time so the project is actually usable.
+
+Contact me at contact@letsgoaway.dev 
