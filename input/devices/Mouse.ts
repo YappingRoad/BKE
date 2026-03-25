@@ -159,7 +159,6 @@ export default class Mouse {
     }
 
     touch(ev: Touch, type: TouchEventType = TouchEventType.MOVE) {
-        Input.pollsThisSecond++;
 
 
         this.lastTouchEventType = type;
@@ -229,7 +228,6 @@ export default class Mouse {
     }
 
     pointerLockedInputUpdate(ev: MouseEvent | PointerEvent, ignoreButtons: boolean = true) {
-        Input.pollsThisSecond++;
 
         let dx = ev.movementX * this.SENSITIVITY;
         let dy = ev.movementY * this.SENSITIVITY;
@@ -294,7 +292,6 @@ export default class Mouse {
     }
 
     updateMouse(ev: PointerEvent | MouseEvent) {
-        Input.pollsThisSecond++;
         this.mousePoll(ev.clientX, ev.clientY, {
             left: this.getPressedRaw(ev, 0),
             middle: this.getPressedRaw(ev, 2),

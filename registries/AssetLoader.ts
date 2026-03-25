@@ -9,6 +9,7 @@ import Time from "../math/Time";
 import Graphic from "../graphic/Graphic";
 import Renderer from "../renderers/Renderer";
 import BKE from "../BKE";
+import PaletteUtil from "../utilities/PaletteUtil";
 
 // todo update to new graphic class
 
@@ -90,8 +91,10 @@ export default class AssetLoader {
             request.responseType = 'blob';
             request.onload = function () {
                 const graphic = Renderer.CURRENT.createGraphic(request.response as Blob)
+
                 const promise = graphic.load();
                 promise.then(() => {
+                    console.log(preloadAsset, PaletteUtil.asHexStrings(graphic.getColorPalette()))
                     AssetLoader.assets.set(preloadAsset, graphic);
                     AssetLoader.assetLoaded(preloadAsset, callback);
                     AssetLoader.loadPercentage.set(preloadAsset, 1.0);

@@ -106,7 +106,12 @@ export interface IRenderer {
     /* Measures text based on game scale */
     measureText(text: string, data: TextDrawData): Vector2;
 
+    /* Draw a pixel not relying on game scale */
+    setPixelRaw(vector: Vector2, color: Color): void;
+
     /* SHAPES */
+
+
 
     /* Draw a rectangle based on game scale */
     drawRectangle(rect: Rectangle, color: Color): void;

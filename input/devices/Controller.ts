@@ -74,7 +74,6 @@ export default class Controller implements Destroyable {
     DEADZONE: number = 0.1;
 
     poll(data: ControllerData) {
-        Input.pollsThisSecond++;
 
         // Adjust controller deadzones
         data.LS = this.adjustStickDeadzone(data.LS);

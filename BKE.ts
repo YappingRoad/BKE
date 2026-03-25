@@ -134,7 +134,7 @@ export default class BKE {
             for (const plugin of Plugin.plugins) {
                 plugin.update(BKE.elapsed);
             }
-            Input.update()
+            Input.update(BKE.elapsed)
 
             if (BKE.STATE != null && BKE.STATE._preloaded) {
                 BKE.STATE.update(BKE.elapsed);

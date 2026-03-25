@@ -27,7 +27,7 @@ export default class DOMRenderer implements IRenderer {
         this.canvas.style.left = "50%";
         this.canvas.style.transform = "translate(-50%, -50%)";
         this.canvas.style.overflow = "visible";
-        this.canvas.style.touchAction = "manipulation"; 
+        this.canvas.style.touchAction = "manipulation";
         this.canvas.autocorrect = false;
         this.canvas.addEventListener("contextmenu", (ev) => {
             Input.MOUSE.updateMouse(ev);
@@ -38,6 +38,10 @@ export default class DOMRenderer implements IRenderer {
         this.measureElem.style.opacity = "0";
         this.measureElem.style.userSelect = "none";
         document.body.appendChild(this.measureElem);
+    }
+    
+    setPixelRaw(vector: Vector2, color: Color): void {
+        this.drawRectangleRaw({ x: vector.x, y: vector.x, width: 1, height: 1 }, color)
     }
 
     getName(): string {

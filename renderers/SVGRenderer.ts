@@ -52,7 +52,9 @@ export default class SVGRenderer implements IRenderer {
     }
 
     renderDeviceName: string = "Unknown (likely software)";
-
+    setPixelRaw(vector: Vector2, color: Color): void {
+        this.drawRectangleRaw({ x: vector.x, y: vector.x, width: 1, height: 1 }, color)
+    }
     getRenderDeviceName(): string {
         if ("gpu" in navigator && (this.renderDeviceName === "Unknown (likely software)")) {
             this.renderDeviceName = "Loading...";

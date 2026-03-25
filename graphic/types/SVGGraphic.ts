@@ -9,6 +9,9 @@ export default class SVGGraphic extends Graphic {
 
     constructor(blob: Blob) {
         super(blob)
+
+    }
+    override load() {
         this.src = URL.createObjectURL(this.blob)
         this.id = `${MathUtil.getRandomID()}`;
         this.svgImage = document.createElementNS(SVGRenderer.namespace, 'image');
@@ -19,8 +22,6 @@ export default class SVGGraphic extends Graphic {
         this.svgImage.setAttribute("preserveAspectRatio", "none");
         this.svgImage.setAttribute("image-rendering", "optimizeSpeed")
 
-    }
-    override load() {
         return new Promise<void>((resolve, reject) => {
             this.img = new Image();
             this.img.crossOrigin = "anonymous";

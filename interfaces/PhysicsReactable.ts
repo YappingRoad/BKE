@@ -64,5 +64,6 @@ export interface PhysicsKeyframe {
     x: number,
     y: number,
     speed: number,
+    angleSpin:number,
     gravity: number,
 }

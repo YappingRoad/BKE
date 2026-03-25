@@ -6,6 +6,8 @@ import Updatable from "./interfaces/Updatable";
 import AssetLoader from "./registries/AssetLoader";
 import SpriteGroup from "./SpriteGroup";
 import Renderer from "./renderers/Renderer";
+import Dimensions from "./math/Dimensions";
+import Color from "./math/Color";
 
 export default class State implements Drawable, Updatable, Destroyable {
     members: Array<GameObject>;
@@ -37,7 +39,7 @@ export default class State implements Drawable, Updatable, Destroyable {
         if (i != -1) {
             this.members.splice(i, 1);
         }
-        this.i --;
+        this.i--;
     }
 
     preload() {

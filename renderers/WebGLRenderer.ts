@@ -32,7 +32,9 @@ export default class WebGLRenderer implements IRenderer {
     createGraphic(blob: Blob): Graphic {
         return new WebGLGraphic(blob);
     }
-
+    setPixelRaw(vector: Vector2, color: Color): void {
+        this.drawRectangleRaw({ x: vector.x, y: vector.x, width: 1, height: 1 }, color)
+    }
     constructor(mode: "webgl" | "webgl2" = "webgl") {
         this.mode = mode;
         this.holder = document.createElement("div");
@@ -117,7 +119,7 @@ export default class WebGLRenderer implements IRenderer {
 
         this.gl.bindTexture(this.gl.TEXTURE_2D, tex);
 
-        this.gl.texImage2D(this.gl.TEXTURE_2D, 0, this.gl.RGBA, this.gl.RGBA, this.gl.UNSIGNED_BYTE, image.img);
+        this.gl.texImage2D(this.gl.TEXTURE_2D, 0, this.gl.RGBA, this.gl.RGBA, this.gl.UNSIGNED_BYTE, image.bitmap);
 
         // const's assume all images are not a power of 2
         this.gl.texParameteri(this.gl.TEXTURE_2D, this.gl.TEXTURE_WRAP_S, this.gl.CLAMP_TO_EDGE);

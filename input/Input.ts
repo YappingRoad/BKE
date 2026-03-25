@@ -1,6 +1,8 @@
 import BKE from "../BKE";
 import Callback from "../Callback";
 import AssetLoader from "../registries/AssetLoader";
+import ArrayUtil from "../utilities/ArrayUtil";
+import MathUtil from "../utilities/MathUtil";
 import Controller, { ControllerType } from "./devices/Controller";
 import DualSense from "./devices/controller/DualSense";
 import JoyCon from "./devices/controller/JoyCon";
@@ -10,6 +12,7 @@ import { ControllerCursorInputMode } from "./devices/interfaces/ControllerData";
 import Keyboard from "./devices/Keyboard";
 import Motion from "./devices/Motion";
 import Mouse from "./devices/Mouse";
+import PollStatistics from "./PollStatistics";
 
 
 export default class Input {
@@ -124,20 +127,19 @@ export default class Input {
         }
     }
 
-    static pollsThisSecond = 0;
-    static hz = 0;
+    static pollStats: PollStatistics = new PollStatistics();
+
     // When any input device is polled
     public static poll() {
+        this.pollStats.poll()
+
         Input.onPoll.dispatch();
     }
 
     // needed for gamepad api as you cant just add event listener and listen for gamepad polls
     // this probably makes gamepad api have input delay, which just adds to the sadness that gamepad api has nothing
-    public static update() {
-        if (BKE._frameCounter === 1) {
-            Input.hz = this.pollsThisSecond;
-            Input.pollsThisSecond = 0;
-        }
+    public static update(elapsed: number) {
+        Input.pollStats.update(elapsed);
         if ("hid" in navigator) {
             navigator.hid.getDevices().then((devices) => {
                 devices.forEach((dev) => {

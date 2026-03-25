@@ -9,16 +9,19 @@ import Color from "../math/Color";
 import Input from "../input/Input";
 import BrowserUtil from "../utilities/BrowserUtil";
 import Graphic from "../graphic/Graphic";
-import HTMLImageGraphic from "../graphic/types/HTMLImageGraphic";
 import MathUtil from "../utilities/MathUtil";
+import ImageBitmapGraphic from "../graphic/types/ImageBitmapGraphic";
 
 export default class Canvas2DRenderer implements IRenderer {
     holder: HTMLDivElement;
     canvas: HTMLCanvasElement;
     ctx: CanvasRenderingContext2D;
 
+
+    private static IMAGE_DEBUG: boolean = true;
+
     createGraphic(blob: Blob): Graphic {
-        return new HTMLImageGraphic(blob);
+        return new ImageBitmapGraphic(blob);
     }
 
     constructor() {
@@ -85,6 +88,10 @@ export default class Canvas2DRenderer implements IRenderer {
         return document.pointerLockElement !== null;
     }
 
+    setPixelRaw(vec: Vector2, color: Color): void {
+        this.drawRectangleRaw({ x: vec.x, y: vec.y, width: 1, height: 1 }, color)
+    }
+
     public clearCanvas(): void {
 
         this.ctx.globalAlpha = 1.0;
@@ -104,10 +111,25 @@ export default class Canvas2DRenderer implements IRenderer {
         this.ctx.fillStyle = "#000";
         this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
         this.ctx.translate(offset.x, offset.y)
+
         this.ctx.imageSmoothingEnabled = false;
     }
 
     public paintCanvas(): void {
+        //     const imageData = this.ctx.getImageData(0, 0, this.canvas.width, this.canvas.height, { pixelFormat: "rgba-unorm8" });
+        //     const data = imageData.data;
+        //     for (let i = 0; i < data.length; i += 4) {
+
+        //         const r = data[i], // red
+        //             g = data[i + 1], // green
+        //             b = data[i + 2]; // blue
+
+        //         const mod = i % 8 === 0;
+        //         data[i] = mod ? r + 10 : r;
+        //         data[i + 1] = mod ? g + 10 : g;
+        //         data[i + 2] = mod ? b + 10 : b;
+        //     }
+        //     this.ctx.putImageData(imageData, 0, 0);
 
     }
 
@@ -134,8 +156,12 @@ export default class Canvas2DRenderer implements IRenderer {
         if (0 >= height) {
             height = image.height;
         }
+        if (Canvas2DRenderer.IMAGE_DEBUG) {
+            this.drawTextRaw(`c:${image.getColorPalette().length}|w:${image.width}|h:${image.height}`, x, y - 10, { color: Color.MAGENTA, font: "Lato", size: 10 })
+            this.drawCircleRaw(x, y, 3, Color.RED)
 
-        this.ctx.drawImage((image as HTMLImageGraphic).img, x, y, width, height);
+        }
+        this.ctx.drawImage((image as ImageBitmapGraphic).bitmap, x, y, width, height);
     }
 
 
@@ -164,9 +190,15 @@ export default class Canvas2DRenderer implements IRenderer {
 
         this.ctx.translate(drawX, drawY);
         this.ctx.rotate(angleRad);
-        this.ctx.drawImage((image as HTMLImageGraphic).img, -originX, -originY, width, height);
+
+        this.ctx.drawImage((image as ImageBitmapGraphic).bitmap, -originX, -originY, width, height);
         this.ctx.rotate(-(angleRad));
         this.ctx.translate(-drawX, -drawY);
+        if (Canvas2DRenderer.IMAGE_DEBUG) {
+            this.drawTextRaw(`c:${image.getColorPalette().length}|w:${image.width}|h:${image.height}`, x, y - 10, { color: Color.MAGENTA, font: "Lato", size: 10 })
+
+            this.drawCircleRaw(drawX, drawY, 3, Color.RED)
+        }
     }
 
     public drawComplexSprite(sprite: ComplexSprite, image: Graphic): void {
@@ -231,10 +263,10 @@ export default class Canvas2DRenderer implements IRenderer {
             this.ctx.translate(drawX, drawY);
             this.ctx.rotate(angleRad);
             if (data.crop != undefined) {
-                this.ctx.drawImage((image as HTMLImageGraphic).img, data.crop.x, data.crop.y, data.crop.width, data.crop.height, -data.origin.x, -data.origin.y, data.width, data.height)
+                this.ctx.drawImage((image as ImageBitmapGraphic).bitmap, data.crop.x, data.crop.y, data.crop.width, data.crop.height, -data.origin.x, -data.origin.y, data.width, data.height)
             }
             else {
-                this.ctx.drawImage((image as HTMLImageGraphic).img, -data.origin.x, -data.origin.y, data.width, data.height);
+                this.ctx.drawImage((image as ImageBitmapGraphic).bitmap, -data.origin.x, -data.origin.y, data.width, data.height);
             }
             this.ctx.rotate(-(angleRad));
             this.ctx.translate(-drawX, -drawY);
@@ -247,15 +279,19 @@ export default class Canvas2DRenderer implements IRenderer {
             this.ctx.translate(drawX, drawY);
             this.ctx.rotate(angleRad);
             if (data.crop != undefined) {
-                this.ctx.drawImage((image as HTMLImageGraphic).img, data.crop.x, data.crop.y, data.crop.width, data.crop.height, -data.origin.x, -data.origin.y, data.width, data.height)
+                this.ctx.drawImage((image as ImageBitmapGraphic).bitmap, data.crop.x, data.crop.y, data.crop.width, data.crop.height, -data.origin.x, -data.origin.y, data.width, data.height)
             }
             else {
-                this.ctx.drawImage((image as HTMLImageGraphic).img, -data.origin.x, -data.origin.y, data.width, data.height);
+                this.ctx.drawImage((image as ImageBitmapGraphic).bitmap, -data.origin.x, -data.origin.y, data.width, data.height);
             }
             this.ctx.rotate(-(angleRad));
             this.ctx.translate(-drawX, -drawY);
         }
+        if (Canvas2DRenderer.IMAGE_DEBUG) {
+            this.drawTextRaw(`c:${image.getColorPalette().length}|w:${image.width}|h:${image.height}`, x, y - 10, { color: Color.MAGENTA, font: "Lato", size: 10 })
 
+            this.drawCircleRaw(drawX, drawY, 3, Color.RED)
+        }
     }
     public drawText(text: string, x: number, y: number, data: TextDrawData): void {
         const size = this.getSafeAreaDimensions();

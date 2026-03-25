@@ -1,4 +1,5 @@
 import MathUtil from "../utilities/MathUtil";
+import StringUtil from "../utilities/StringUtil";
 
 export default class Color {
     static get RED() { return Color.rgb(255, 0, 0); }
@@ -18,20 +19,26 @@ export default class Color {
 
     static get BLACK() { return Color.rgb(0, 0, 0); }
     static get TRANSPARENT() { return Color.rgba(0, 0, 0, 0); }
+    static get MAGENTA() { return Color.rgb(255, 0, 255); }
 
-
-    private buffer: Uint8Array;
+    private buffer: Uint8ClampedArray;
     constructor(r: number, g: number, b: number, a: number = 255) {
         // r, g, b, and a
-        this.buffer = new Uint8Array(4);
-        this.red = r;
-        this.green = g;
-        this.blue = b;
-        this.alpha = a;
+        this.buffer = new Uint8ClampedArray([r, g, b, a]);
     }
 
     static rgb(r: number, g: number, b: number): Color {
         return new Color(r, g, b);
+    }
+
+
+    static fromBigInt(bigint: BigInt): Color {
+        return new Color(
+            (Number(bigint) >> 24) & 0xFF,
+            (Number(bigint) >> 16) & 0xFF,
+            (Number(bigint) >> 8) & 0xFF,
+            (Number(bigint)) & 0xFF
+        );
     }
 
     /* ALPHA MUST BE FLOAT */
@@ -112,9 +119,9 @@ export default class Color {
             b = x;
         }
 
-        r = Math.round((r + m) * 255);
-        g = Math.round((g + m) * 255);
-        b = Math.round((b + m) * 255);
+        r = Math.trunc((r + m) * 255);
+        g = Math.trunc((g + m) * 255);
+        b = Math.trunc((b + m) * 255);
 
         return Color.rgba(r, g, b, alpha);
     }
@@ -168,7 +175,7 @@ export default class Color {
     }
 
     set greenFloat(v: number) {
-        this.green = Math.min(255, Math.round(v * 255));
+        this.green = Math.min(255, Math.trunc(v * 255));
     }
 
     get blueFloat(): number {
@@ -176,7 +183,7 @@ export default class Color {
     }
 
     set blueFloat(v: number) {
-        this.blue = Math.min(255, Math.round(v * 255));
+        this.blue = Math.min(255, Math.trunc(v * 255));
     }
 
     get alphaFloat(): number {
@@ -184,7 +191,7 @@ export default class Color {
     }
 
     set alphaFloat(v: number) {
-        this.alpha = Math.min(255, Math.round(v * 255));
+        this.alpha = Math.min(255, Math.trunc(v * 255));
     }
 
     asHSB(): HSBColorData {
@@ -209,6 +216,14 @@ export default class Color {
         return `#${Color.numToHex(this.red)}${Color.numToHex(this.green)}${Color.numToHex(this.blue)}`;
     }
 
+    asBigInt(): bigint {
+        return BigInt(`0x${Color.numToHex(this.red)}${Color.numToHex(this.green)}${Color.numToHex(this.blue)}${Color.numToHex(this.alpha)}`)
+    }
+
+    asNumberArray(): Array<number> {
+        return [this.red, this.green, this.blue, this.alpha]
+    }
+
     asHexRGBA(): string {
         return `#${Color.numToHex(this.red)}${Color.numToHex(this.green)}${Color.numToHex(this.blue)}${Color.numToHex(this.alpha)}`;
     }
@@ -226,7 +241,7 @@ export default class Color {
     }
 
     /* Returns clone of original color with different alpha */
-    opacity(alphaFloat:number):Color {
+    opacity(alphaFloat: number): Color {
         let cloned = this.clone();
         cloned.alphaFloat = alphaFloat;
         return cloned;
