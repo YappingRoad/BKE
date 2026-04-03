@@ -10,6 +10,7 @@ import BrowserUtil from "../utilities/BrowserUtil";
 import Canvas2DRenderer from "./Canvas2DRenderer";
 import DOMRenderer from "./DOMRenderer";
 import WebGLRenderer from "./WebGLRenderer";
+import DebugRenderer from "./DebugRenderer";
 export default class Renderer {
     public static CURRENT: IRenderer;
 
@@ -21,7 +22,8 @@ export default class Renderer {
             Renderer.CURRENT = renderer.includes("webgl") ? new WebGLRenderer(renderer as ("webgl" | "webgl2")) : (renderer === "dom") ? new DOMRenderer() : new Canvas2DRenderer();
             //Input.MOUSE.sensitivity = Number.parseFloat(prompt("Pointer lock sensitivity: (must be a float otherwise game will crash!)") as string);
         }
-
+            
+        // Renderer.CURRENT = new DebugRenderer(Renderer.CURRENT)
     }
     private static getDefaultRenderer(): IRenderer {
         // return new SVGRenderer();

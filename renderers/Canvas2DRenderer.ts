@@ -18,7 +18,6 @@ export default class Canvas2DRenderer implements IRenderer {
     ctx: CanvasRenderingContext2D;
 
 
-    private static IMAGE_DEBUG: boolean = true;
 
     createGraphic(blob: Blob): Graphic {
         return new ImageBitmapGraphic(blob);
@@ -156,11 +155,7 @@ export default class Canvas2DRenderer implements IRenderer {
         if (0 >= height) {
             height = image.height;
         }
-        if (Canvas2DRenderer.IMAGE_DEBUG) {
-            this.drawTextRaw(`c:${image.getColorPalette().length}|w:${image.width}|h:${image.height}`, x, y - 10, { color: Color.MAGENTA, font: "Lato", size: 10 })
-            this.drawCircleRaw(x, y, 3, Color.RED)
 
-        }
         this.ctx.drawImage((image as ImageBitmapGraphic).bitmap, x, y, width, height);
     }
 
@@ -194,11 +189,7 @@ export default class Canvas2DRenderer implements IRenderer {
         this.ctx.drawImage((image as ImageBitmapGraphic).bitmap, -originX, -originY, width, height);
         this.ctx.rotate(-(angleRad));
         this.ctx.translate(-drawX, -drawY);
-        if (Canvas2DRenderer.IMAGE_DEBUG) {
-            this.drawTextRaw(`c:${image.getColorPalette().length}|w:${image.width}|h:${image.height}`, x, y - 10, { color: Color.MAGENTA, font: "Lato", size: 10 })
 
-            this.drawCircleRaw(drawX, drawY, 3, Color.RED)
-        }
     }
 
     public drawComplexSprite(sprite: ComplexSprite, image: Graphic): void {
@@ -287,11 +278,7 @@ export default class Canvas2DRenderer implements IRenderer {
             this.ctx.rotate(-(angleRad));
             this.ctx.translate(-drawX, -drawY);
         }
-        if (Canvas2DRenderer.IMAGE_DEBUG) {
-            this.drawTextRaw(`c:${image.getColorPalette().length}|w:${image.width}|h:${image.height}`, x, y - 10, { color: Color.MAGENTA, font: "Lato", size: 10 })
 
-            this.drawCircleRaw(drawX, drawY, 3, Color.RED)
-        }
     }
     public drawText(text: string, x: number, y: number, data: TextDrawData): void {
         const size = this.getSafeAreaDimensions();

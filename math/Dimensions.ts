@@ -123,12 +123,20 @@ export default class Dimensions {
         return { x: UILeft, y: UITop, width: Math.abs(UILeft) + Dimensions.getUIRight(), height: Math.abs(UITop) + Dimensions.getUIBottom() };
     }
 
+    public static UISafeRect(): Rectangle {
+        const UILeft = Dimensions.getSafeUILeft();
+        const UITop = Dimensions.getUITop();
+
+        return { x: UILeft, y: UITop, width: Math.abs(UILeft) + Dimensions.getSafeUIRight(), height: Math.abs(UITop) + Dimensions.getUIBottom() };
+    }
+
     private static UILeft: number | undefined = undefined;
     public static getUILeft(): number {
         if (Dimensions.UILeft === undefined) {
             const size = Renderer.CURRENT.getSafeAreaDimensions();
             const xScale = size.x / Dimensions.GAME_WIDTH;
             Dimensions.UILeft = -((Renderer.CURRENT.getSafeAreaOffset().x) / xScale);
+
         }
         return Dimensions.UILeft;
     }
@@ -156,7 +164,7 @@ export default class Dimensions {
     }
 
     public static getSafeUIRight(): number {
-        return (Dimensions.GAME_WIDTH - Dimensions.getUILeft());
+        return (Dimensions.GAME_WIDTH - Dimensions.getSafeUILeft());
     }
 
     private static UITop: number | undefined = undefined;
