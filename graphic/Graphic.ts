@@ -33,19 +33,25 @@ export default class Graphic implements Destroyable {
         return []
     }
 
-    setColorPalette(palette: ColorPalette):Graphic {
-        return new Graphic(new Blob())
+    async setColorPalette(palette: ColorPalette): Promise<void> {
+
+    }
+
+    async clone(): Promise<Graphic> {
+        const graphic = new Graphic(this.blob);
+        await graphic.load();
+        return graphic;
     }
 
     protected static createOffscreen(): OffscreenContext {
         let ctx: OffscreenContext | null = null;
         if ("OffscreenCanvas" in window) {
-            const octx = new OffscreenCanvas(1, 1).getContext("2d", { willReadFrequently: true });
+            const octx = new OffscreenCanvas(1, 1).getContext("2d", { willReadFrequently: true, desynchronized: true, alpha: true });
             ctx = octx;
         }
 
         if (ctx === null) {
-            ctx = document.createElement("canvas").getContext("2d", { willReadFrequently: true }) as CanvasRenderingContext2D;
+            ctx = document.createElement("canvas").getContext("2d", { willReadFrequently: true, desynchronized: true, alpha: true }) as CanvasRenderingContext2D;
         }
 
 

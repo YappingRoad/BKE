@@ -33,4 +33,10 @@ export default class HTMLImageGraphic extends Graphic {
         URL.revokeObjectURL(this.src);
         super.destroy();
     }
+
+    override async clone(): Promise<Graphic> {
+        const graphic = new HTMLImageGraphic(this.blob);
+        await graphic.load();
+        return graphic;
+    }
 }

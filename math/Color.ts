@@ -24,7 +24,7 @@ export default class Color {
     private buffer: Uint8ClampedArray;
     constructor(r: number, g: number, b: number, a: number = 255) {
         // r, g, b, and a
-        this.buffer = new Uint8ClampedArray([r, g, b, a]);
+        this.buffer = new Uint8ClampedArray([Math.min(r, 255), Math.min(g, 255), Math.min(b, 255), Math.min(a, 255)]);
     }
 
     static rgb(r: number, g: number, b: number): Color {
@@ -45,6 +45,8 @@ export default class Color {
     static rgba(r: number, g: number, b: number, a: number): Color {
         return new Color(r, g, b, a * 255);
     }
+
+
 
     static hsl(hue: number, saturation: number, lightness: number): Color {
         return Color.hsla(hue, saturation, lightness, 1.0);
@@ -194,6 +196,16 @@ export default class Color {
         this.alpha = Math.min(255, Math.trunc(v * 255));
     }
 
+    public static add(a: Color, b: Color, ignoreAlpha: boolean = true): Color {
+        return new Color(a.red + b.red, a.green + b.green, a.blue + b.blue, ignoreAlpha ? a.alpha : a.alpha + b.alpha)
+    }
+
+
+    public static subtract(a: Color, b: Color, ignoreAlpha: boolean = true): Color {
+        return new Color(a.red - b.red, a.green - b.green, a.blue - b.blue, ignoreAlpha ? a.alpha : a.alpha - b.alpha)
+    }
+
+
     asHSB(): HSBColorData {
         const r = this.redFloat;
         const g = this.greenFloat;
@@ -247,7 +259,7 @@ export default class Color {
         return cloned;
     }
 
-    private static numToHex(num: number) {
+    public static numToHex(num: number) {
         let hexString = num.toString(16);
 
         if (hexString.length === 1) {
@@ -256,6 +268,9 @@ export default class Color {
 
         return hexString;
     }
+
+
+
 }
 
 export type HSBColorData = {

@@ -53,4 +53,10 @@ export default class SVGGraphic extends Graphic {
         URL.revokeObjectURL(this.src);
         super.destroy();
     }
+    
+    override async clone(): Promise<Graphic> {
+        const graphic = new SVGGraphic(this.blob);
+        await graphic.load();
+        return graphic;
+    }
 }
