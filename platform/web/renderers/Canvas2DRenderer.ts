@@ -1,16 +1,16 @@
-import Rectangle from "../math/Rectangle";
-import { Sprite } from "../Sprite";
-import Vector2 from "../math/Vector2";
-import Renderer, { ComplexSpriteDrawData, ConicGradientDrawData, ConicGradientPoint, IRenderer, TextDrawData } from "./Renderer";
-import Dimensions from "../math/Dimensions";
-import RendererUtil from "../utilities/RendererUtil";
-import ComplexSprite from "../objects/sprites/ComplexSprite";
-import Color from "../math/Color";
-import Input from "../input/Input";
-import BrowserUtil from "../utilities/BrowserUtil";
-import Graphic from "../graphic/Graphic";
-import MathUtil from "../utilities/MathUtil";
-import ImageBitmapGraphic from "../graphic/types/ImageBitmapGraphic";
+import Graphic from "../../../graphic/Graphic";
+import Input from "../../../input/Input";
+import Color from "../../../math/Color";
+import Dimensions from "../../../math/Dimensions";
+import Rectangle from "../../../math/Rectangle";
+import Vector2 from "../../../math/Vector2";
+import ComplexSprite from "../../../objects/sprites/ComplexSprite";
+import { IRenderer, ComplexSpriteDrawData, TextDrawData, ConicGradientDrawData, ConicGradientPoint } from "../../../renderers/Renderer";
+import { Sprite } from "../../../Sprite";
+import BrowserUtil from "../../../utilities/BrowserUtil";
+import MathUtil from "../../../utilities/MathUtil";
+import RendererUtil from "../../../utilities/RendererUtil";
+import ImageBitmapGraphic from "../graphic/ImageBitmapGraphic";
 
 export default class Canvas2DRenderer implements IRenderer {
     holder: HTMLDivElement;

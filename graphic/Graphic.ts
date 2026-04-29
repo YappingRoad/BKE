@@ -2,7 +2,6 @@ import Destroyable from "../interfaces/Destroyable";
 import Color from "../math/Color";
 import MathUtil from "../utilities/MathUtil";
 export type ColorPalette = Array<Color>;
-export type OffscreenContext = CanvasRenderingContext2D | OffscreenCanvasRenderingContext2D;
 export default class Graphic implements Destroyable {
     blob: Blob;
     src: string = "";
@@ -42,24 +41,4 @@ export default class Graphic implements Destroyable {
         await graphic.load();
         return graphic;
     }
-
-    protected static createOffscreen(): OffscreenContext {
-        let ctx: OffscreenContext | null = null;
-        if ("OffscreenCanvas" in window) {
-            const octx = new OffscreenCanvas(1, 1).getContext("2d", { willReadFrequently: true, desynchronized: true, alpha: true });
-            ctx = octx;
-        }
-
-        if (ctx === null) {
-            ctx = document.createElement("canvas").getContext("2d", { willReadFrequently: true, desynchronized: true, alpha: true }) as CanvasRenderingContext2D;
-        }
-
-
-
-        ctx.imageSmoothingQuality = "low";
-        ctx.imageSmoothingEnabled = false;
-
-        return ctx;
-    }
-
 }

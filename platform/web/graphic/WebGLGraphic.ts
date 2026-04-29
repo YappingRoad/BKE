@@ -1,6 +1,6 @@
-import Graphic, { ColorPalette } from "../Graphic";
-import HTMLImageGraphic from "./HTMLImageGraphic";
+import Graphic from "../../../graphic/Graphic";
 import ImageBitmapGraphic from "./ImageBitmapGraphic";
+
 
 export default class WebGLGraphic extends ImageBitmapGraphic {
     texture: WebGLTexture | null = null;

@@ -1,4 +1,4 @@
-import Graphic from "../Graphic";
+import Graphic from "../../../graphic/Graphic";
 
 export default class HTMLImageGraphic extends Graphic {
     public img!: HTMLImageElement;

@@ -1,15 +1,15 @@
-import Renderer, { ComplexSpriteDrawData, IRenderer, TextDrawData } from "./Renderer";
-import { Sprite } from "../Sprite";
-import Vector2 from "../math/Vector2";
-import Rectangle from "../math/Rectangle";
-import Dimensions from "../math/Dimensions";
-import ComplexSprite from "../objects/sprites/ComplexSprite";
-import RendererUtil from "../utilities/RendererUtil";
-import Color from "../math/Color";
-import BrowserUtil from "../utilities/BrowserUtil";
-import Input from "../input/Input";
-import Graphic from "../graphic/Graphic";
-import SVGGraphic from "../graphic/types/SVGGraphic";
+import Graphic from "../../../graphic/Graphic";
+import Input from "../../../input/Input";
+import Color from "../../../math/Color";
+import Dimensions from "../../../math/Dimensions";
+import Rectangle from "../../../math/Rectangle";
+import Vector2 from "../../../math/Vector2";
+import ComplexSprite from "../../../objects/sprites/ComplexSprite";
+import { IRenderer, ComplexSpriteDrawData, TextDrawData } from "../../../renderers/Renderer";
+import { Sprite } from "../../../Sprite";
+import BrowserUtil from "../../../utilities/BrowserUtil";
+import RendererUtil from "../../../utilities/RendererUtil";
+import SVGGraphic from "../graphic/SVGGraphic";
 
 // Smallest Renderer out of all of them, but also runs like shit
 export default class SVGRenderer implements IRenderer {

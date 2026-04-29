@@ -1,7 +1,6 @@
-import SVGRenderer from "../../renderers/SVGRenderer";
-import MathUtil from "../../utilities/MathUtil";
-import Graphic from "../Graphic";
-
+import Graphic from "../../../graphic/Graphic";
+import MathUtil from "../../../utilities/MathUtil";
+import SVGRenderer from "../renderers/SVGRenderer";
 export default class SVGGraphic extends Graphic {
     public img!: HTMLImageElement;
     public svgImage!: SVGImageElement;

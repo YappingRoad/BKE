@@ -1,13 +1,12 @@
-import { ComplexSpriteDrawData, TextDrawData } from "../Renderer";
-import Rectangle from "../../math/Rectangle";
-import Vector2 from "../../math/Vector2";
-import MathUtil from "../../utilities/MathUtil";
+
 import WebGLRenderer from "../WebGLRenderer";
 import Matrix4 from "./Matrix4";
 import vertShader from './shaders/complex.vert';
 import fragShader from './shaders/complex.frag';
-import WebGLGraphic from "../../graphic/types/WebGLGraphic";
-import Graphic from "../../graphic/Graphic";
+import Graphic from "../../../../graphic/Graphic";
+import { ComplexSpriteDrawData } from "../../../../renderers/Renderer";
+import MathUtil from "../../../../utilities/MathUtil";
+import WebGLGraphic from "../../graphic/WebGLGraphic";
 
 export default class GLComplexTextureRenderer {
     vertShader: string = vertShader;

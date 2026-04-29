@@ -1,21 +1,18 @@
-import Renderer, { ComplexSpriteDrawData, IRenderer, TextDrawData } from "./Renderer";
-import Rectangle from "../math/Rectangle";
-import { Sprite } from "../Sprite";
-import Vector2 from "../math/Vector2";
-import AssetLoader from "../registries/AssetLoader";
-import { PreloadAssetType } from "../interfaces/PreloadRequestable";
-import Dimensions from "../math/Dimensions";
-import ComplexSprite from "../objects/sprites/ComplexSprite";
-import GLTextureRenderer from "./gl/GLTextureRenderer";
-import Matrix4 from "./gl/Matrix4";
+import Graphic from "../../../graphic/Graphic";
+import Input from "../../../input/Input";
+import { PreloadAssetType } from "../../../interfaces/PreloadRequestable";
+import Color from "../../../math/Color";
+import Dimensions from "../../../math/Dimensions";
+import Rectangle from "../../../math/Rectangle";
+import Vector2 from "../../../math/Vector2";
+import ComplexSprite from "../../../objects/sprites/ComplexSprite";
+import AssetLoader from "../../../registries/AssetLoader";
+import { IRenderer, ComplexSpriteDrawData, TextDrawData } from "../../../renderers/Renderer";
+import { Sprite } from "../../../Sprite";
+import BrowserUtil from "../../../utilities/BrowserUtil";
+import WebGLGraphic from "../graphic/WebGLGraphic";
 import GLComplexTextureRenderer from "./gl/GLComplexTextureRenderer";
-import Color from "../math/Color";
-import RendererUtil from "../utilities/RendererUtil";
-import Input from "../input/Input";
-import BrowserUtil from "../utilities/BrowserUtil";
-import Graphic from "../graphic/Graphic";
-import HTMLImageGraphic from "../graphic/types/HTMLImageGraphic";
-import WebGLGraphic from "../graphic/types/WebGLGraphic";
+import GLTextureRenderer from "./gl/GLTextureRenderer";
 
 // one day
 export default class WebGLRenderer implements IRenderer {

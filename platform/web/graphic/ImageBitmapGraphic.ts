@@ -1,6 +1,6 @@
-import Color from "../../math/Color";
-import PaletteUtil from "../../utilities/PaletteUtil";
-import Graphic, { ColorPalette, OffscreenContext } from "../Graphic";
+import Graphic, { ColorPalette } from "../../../graphic/Graphic";
+import Color from "../../../math/Color";
+export type OffscreenContext = CanvasRenderingContext2D | OffscreenCanvasRenderingContext2D;
 
 export default class ImageBitmapGraphic extends Graphic {
     public img!: HTMLImageElement;
@@ -66,7 +66,7 @@ export default class ImageBitmapGraphic extends Graphic {
         }
 
         if (ImageBitmapGraphic._ctxForPalette === undefined) {
-            ImageBitmapGraphic._ctxForPalette = Graphic.createOffscreen();
+            ImageBitmapGraphic._ctxForPalette = ImageBitmapGraphic.createOffscreen();
         }
         const ctx = ImageBitmapGraphic._ctxForPalette;
         ctx.canvas.width = this.width;
@@ -77,7 +77,7 @@ export default class ImageBitmapGraphic extends Graphic {
         // ctx.clearRect(0, 0, this.width, this.height)
 
         ctx.drawImage(this.bitmap, 0, 0, this.width, this.height)
-        const data = ctx.getImageData(0, 0, this.width, this.height, { pixelFormat: "rgba-unorm8" }).data;
+        const data = (ctx as any).getImageData(0, 0, this.width, this.height, { pixelFormat: "rgba-unorm8" }).data as ImageDataArray;
 
         // Holy fuckery
         // data.reverse() converts to abgr to rgba (its reversed, probably different endian type)
@@ -131,7 +131,7 @@ export default class ImageBitmapGraphic extends Graphic {
         console.log()
 
         if (ImageBitmapGraphic._ctxForPalette === undefined) {
-            ImageBitmapGraphic._ctxForPalette = Graphic.createOffscreen();
+            ImageBitmapGraphic._ctxForPalette = ImageBitmapGraphic.createOffscreen();
         }
         const ctx = ImageBitmapGraphic._ctxForPalette;
         ctx.canvas.width = this.width;
@@ -140,7 +140,7 @@ export default class ImageBitmapGraphic extends Graphic {
         ctx.globalAlpha = 1.0;
         ctx.drawImage(this.bitmap, 0, 0, this.width, this.height)
 
-        const imgData = ctx.getImageData(0, 0, this.width, this.height, { pixelFormat: "rgba-unorm8" });
+        const imgData = (ctx as any).getImageData(0, 0, this.width, this.height, { pixelFormat: "rgba-unorm8" });
 
 
 
@@ -158,7 +158,7 @@ export default class ImageBitmapGraphic extends Graphic {
                 imgData.data[i + 3] = newData.alpha;
             }
         }
-        
+
         this.bitmap.close()
         this.bitmap = await createImageBitmap(imgData, {
             // imageOrientation: "flipY",
@@ -178,5 +178,24 @@ export default class ImageBitmapGraphic extends Graphic {
         const graphic = new ImageBitmapGraphic(this.blob);
         await graphic.load();
         return graphic;
+    }
+
+    protected static createOffscreen(): OffscreenContext {
+        let ctx: OffscreenContext | null = null;
+        if ("OffscreenCanvas" in window) {
+            const octx = new OffscreenCanvas(1, 1).getContext("2d", { willReadFrequently: true, desynchronized: true, alpha: true });
+            ctx = octx;
+        }
+
+        if (ctx === null) {
+            ctx = document.createElement("canvas").getContext("2d", { willReadFrequently: true, desynchronized: true, alpha: true }) as CanvasRenderingContext2D;
+        }
+
+
+
+        ctx.imageSmoothingQuality = "low";
+        ctx.imageSmoothingEnabled = false;
+
+        return ctx;
     }
 }

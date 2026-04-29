@@ -1,12 +1,12 @@
-import Main from "../../Main";
-import Graphic from "../graphic/Graphic";
-import Color from "../math/Color";
-import Rectangle from "../math/Rectangle";
-import Vector2 from "../math/Vector2";
-import ComplexSprite from "../objects/sprites/ComplexSprite";
-import { Sprite } from "../Sprite";
+
+import Graphic from "../../../graphic/Graphic";
+import Color from "../../../math/Color";
+import Rectangle from "../../../math/Rectangle";
+import Vector2 from "../../../math/Vector2";
+import ComplexSprite from "../../../objects/sprites/ComplexSprite";
+import { IRenderer, ComplexSpriteDrawData, TextDrawData } from "../../../renderers/Renderer";
+import { Sprite } from "../../../Sprite";
 import Canvas2DRenderer from "./Canvas2DRenderer";
-import { ComplexSpriteDrawData, IRenderer, TextDrawData } from "./Renderer";
 
 export default class DebugRenderer implements IRenderer {
     renderer: IRenderer;
