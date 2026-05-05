@@ -1,4 +1,5 @@
-import Android from "../android/Android";
+import Android from "../platform/android/Android";
+import Platform from "../platform/Platform";
 import Renderer from "../renderers/Renderer";
 import BrowserUtil from "../utilities/BrowserUtil";
 import MathUtil from "../utilities/MathUtil";
@@ -187,10 +188,8 @@ export default class Dimensions {
 
     private static UIScale: number | undefined = undefined;
     public static getUIScale(): number {
-        if (Dimensions.UIScale === undefined) {                                      // older ios fix
-            Dimensions.UIScale = (BrowserUtil.isiOSPWA() || Android.isAvailable()) ? Math.max(1.5, window.devicePixelRatio / 2) : (Dimensions.getScale());
-
-
+        if (Dimensions.UIScale === undefined) {                                  // older ios fix
+            Dimensions.UIScale = (BrowserUtil.isiOSPWA() || Platform.getCurrent() instanceof Android) ? Math.max(1.5, window.devicePixelRatio / 2) : (Dimensions.getScale());
         }
         return Dimensions.UIScale;
     }

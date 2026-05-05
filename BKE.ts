@@ -1,6 +1,5 @@
 // BK Engine
 
-import Sound from "./audio/Sound";
 import Electron from "./electron/Electron";
 import { Key } from "./input/devices/Keyboard";
 import Input from "./input/Input";
@@ -16,6 +15,7 @@ import StorageHandler from "./StorageHandler";
 import Plugin from "./Plugin";
 import Callback from "./Callback";
 import { Sprite } from "./Sprite";
+import Sound from "./audio/Sound";
 
 
 export default class BKE {

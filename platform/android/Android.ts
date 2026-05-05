@@ -10,6 +10,7 @@ export default class Android extends Platform {
         this.web = new Web();
         this.setPlatform()
     }
+    
     getDefaultRenderer(): IRenderer {
         return this.web.getDefaultRenderer()
     }

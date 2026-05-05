@@ -4,7 +4,6 @@ import Rectangle from "../math/Rectangle";
 import Vector2 from "../math/Vector2";
 import Color from "../math/Color";
 import Graphic from "../graphic/Graphic";
-import Android from "../android/Android";
 import Electron from "../electron/Electron";
 import BrowserUtil from "../utilities/BrowserUtil";
 import Platform from "../platform/Platform";

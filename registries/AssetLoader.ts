@@ -1,21 +1,24 @@
 import { SoundMode, PreloadAsset, PreloadAssetType } from "../interfaces/PreloadRequestable";
-import Sound from "../audio/Sound";
-import PannerSound from "../audio/PannerSound";
-import StereoPannerSound from "../audio/StereoPannerSound";
 import Callback from "../Callback";
-import MusicSound from "../audio/MusicSound";
 import Electron from "../electron/Electron";
 import Time from "../math/Time";
 import Graphic from "../graphic/Graphic";
 import Renderer from "../renderers/Renderer";
 import BKE from "../BKE";
 import PaletteUtil from "../utilities/PaletteUtil";
+import Sample from "../audio/Sample";
+import Platform from "../platform/Platform";
+import PannerSound from "../audio/PannerSound";
+import StereoPannerSound from "../audio/StereoPannerSound";
+import MusicSound from "../audio/MusicSound";
+import Sound from "../audio/Sound";
 
 // todo update to new graphic class
 
-export type AssetObject = Graphic | Sound | string;
+export type AssetObject = Graphic | Sample | string;
 
 export default class AssetLoader {
+
     static cacheQueue: Array<PreloadAsset> = [];
     static assets: Map<PreloadAsset, AssetObject> = new Map();
     static loadPercentage: Map<PreloadAsset, number> = new Map();
@@ -72,7 +75,7 @@ export default class AssetLoader {
                 AssetLoader.loadImage(preloadAsset, callback);
             }
             else if (preloadAsset.type === PreloadAssetType.SOUND) {
-                AssetLoader.loadSound(preloadAsset, callback);
+                AssetLoader.loadSample(preloadAsset, callback);
             }
             else if (preloadAsset.type === PreloadAssetType.TEXT) {
                 AssetLoader.loadText(preloadAsset, callback);
@@ -82,7 +85,6 @@ export default class AssetLoader {
 
     public static loadImage(preloadAsset: PreloadAsset, callback: VoidFunction): Promise<void> {
         return new Promise<void>((resolve) => {
-            AssetLoader.loadPercentage.set(preloadAsset, 0);
             AssetLoader.loadPercentage.set(preloadAsset, 0);
 
             const request = new XMLHttpRequest();
@@ -104,8 +106,8 @@ export default class AssetLoader {
                     AssetLoader.assetNotLoaded(preloadAsset, callback);
                     resolve();
                 })
-                
-              
+
+
 
             }
             request.onprogress = function (ev) {
@@ -120,7 +122,7 @@ export default class AssetLoader {
         });
     }
 
-    public static loadSound(preloadAsset: PreloadAsset, callback: VoidFunction): Promise<void> {
+    public static loadSample(preloadAsset: PreloadAsset, callback: VoidFunction): Promise<void> {
         return new Promise<void>((resolve) => {
             AssetLoader.loadPercentage.set(preloadAsset, 0);
 
@@ -133,16 +135,18 @@ export default class AssetLoader {
             //webaudio paramaters
             request.responseType = 'arraybuffer';
             request.onload = function () {
-                Sound.context.decodeAudioData(request.response, function (buffer: any) {
-                    AssetLoader.assets.set(preloadAsset, AssetLoader.createSoundObject(buffer, preloadAsset));
+                const sample = Platform.getCurrent().createSample(request.response);
+                const promise = sample.load()
+                promise.then(() => {
+                    AssetLoader.assets.set(preloadAsset, sample);
                     AssetLoader.assetLoaded(preloadAsset, callback);
                     resolve();
                     AssetLoader.loadPercentage.set(preloadAsset, 1.0);
-
-                }, function () {
+                }).catch(() => {
                     AssetLoader.assetNotLoaded(preloadAsset, callback);
                     resolve();
-                });
+                })
+
             }
             request.onprogress = function (ev) {
                 BKE.loadstatus = "Loading sounds...";
@@ -227,25 +231,7 @@ export default class AssetLoader {
         // }
     }
 
-    private static createSoundObject(buffer: AudioBuffer, asset: PreloadAsset): Sound {
-        let sound: Sound;
 
-        if (asset.soundMode === SoundMode.PANNER) {
-            sound = new PannerSound(buffer);
-        }
-        else if (asset.soundMode === SoundMode.STEREO_PANNER) {
-            sound = new StereoPannerSound(buffer);
-        }
-        else if (asset.soundMode === SoundMode.MUSIC) {
-            sound = new MusicSound(buffer);
-        }
-        else {
-            sound = new Sound(buffer)
-        }
-
-        sound.create();
-        return sound;
-    }
 
     static exists(asset: PreloadAsset) {
         return AssetLoader.assets.has(asset);
@@ -255,20 +241,37 @@ export default class AssetLoader {
         return (AssetLoader.assets.get(asset) as Graphic);
     }
 
+    static getSample(asset: PreloadAsset): Sample {
+        return (AssetLoader.assets.get(asset) as Sample);
+    }
+
+
     static getSound(asset: PreloadAsset): Sound {
-        return (AssetLoader.assets.get(asset) as Sound);
+        const sample = AssetLoader.getSample(asset);
+        const sound = Platform.getCurrent().getSound(sample);
+        sound.create();
+        return sound;
     }
 
     static getPannerSound(asset: PreloadAsset): PannerSound {
-        return (AssetLoader.assets.get(asset) as PannerSound);
+        const sample = AssetLoader.getSample(asset);
+        const sound = Platform.getCurrent().getPannerSound(sample);
+        sound.create();
+        return sound;
     }
 
     static getStereoPannerSound(asset: PreloadAsset): StereoPannerSound {
-        return (AssetLoader.assets.get(asset) as StereoPannerSound);
+        const sample = AssetLoader.getSample(asset);
+        const sound = Platform.getCurrent().getStereoPannerSound(sample);
+        sound.create();
+        return sound;
     }
 
     static getMusicSound(asset: PreloadAsset): MusicSound {
-        return (AssetLoader.assets.get(asset) as MusicSound);
+        const sample = AssetLoader.getSample(asset);
+        const sound = Platform.getCurrent().getMusicSound(sample);
+        sound.create();
+        return sound;
     }
 
     static getText(asset: PreloadAsset): string {

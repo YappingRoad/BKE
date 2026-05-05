@@ -1,64 +1,29 @@
 import Callback from "../Callback";
 import Updatable from "../interfaces/Updatable";
 import Sound from "./Sound";
-import { SoundChannel } from "./SoundChannel";
 
-export default class MusicSound extends Sound implements Updatable {
-    constructor(buffer: AudioBuffer) {
-        super(buffer);
-    }
+export default interface MusicSound extends Sound, Updatable  {
 
-    beatsPerMeasure: number = 4;
 
-    bpm: number = 60;
-    bps: number = 1;
+    beatsPerMeasure: number ;
+
+    bpm: number;
+    bps: number;
     // in seconds
-    beatDuration: number = 1;
-
-    override getChannel(): SoundChannel {
-        return SoundChannel.MUSIC;
-    }
+    beatDuration: number;
 
 
-    setMusicMeta(bpm: number) {
-        this.bpm = bpm;
-        this.updateBPM();
-    }
+    setMusicMeta(bpm: number):void;
 
-    updateBPM() {
-        this.bps = ((this.bpm) / (60)) * this.speed;
-        this.beatDuration = (1 / (this.bps));
-    }
+    updateBPM():void;
 
-    currentBeat: number = -1;
+    currentBeat: number;
     // i dont know what this is called but its 1/4th of a beat
-    currentStep: number = -1;
+    currentStep: number;
 
 
-    onBeatHit: Callback<number> = new Callback();
-    onStepHit: Callback<number> = new Callback();
+    onBeatHit: Callback<number>;
+    onStepHit: Callback<number>;
 
-    update(elapsed: number): void {
-        if (this.startTimestamp === -1) {
-            return;
-        }
-        this.updateBPM();
-
-        let curbeat = Math.trunc(this.currentTime / this.beatDuration) + 1;
-        if (curbeat != this.currentBeat) {
-            this.currentBeat = curbeat;
-            this.onBeatHit.dispatch(this.currentBeat);
-        }
-
-        let curstep = Math.trunc(this.currentTime / ((this.beatDuration) / 4)) + 1;
-        if (curstep != this.currentStep) {
-            this.currentStep = curstep;
-            this.onStepHit.dispatch(this.currentStep);
-        }
-    }
-    override destroy(): void {
-        this.onBeatHit.removeAll();
-        this.onStepHit.removeAll();
-        super.destroy();
-    }
+    update(elapsed: number): void;
 }
