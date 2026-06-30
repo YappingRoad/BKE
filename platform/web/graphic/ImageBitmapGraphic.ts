@@ -113,7 +113,7 @@ export default class ImageBitmapGraphic extends Graphic {
             // imageOrientation: "flipY",
             premultiplyAlpha: "none",
             resizeQuality: "pixelated",
-            colorSpaceConversion: "none",
+            colorSpaceConversion: "default",
             // resizeWidth: Math.ceil(this.width),
             // resizeHeight: Math.ceil(this.height)
         })
@@ -146,7 +146,7 @@ export default class ImageBitmapGraphic extends Graphic {
 
 
         for (let i = 0; i < imgData.data.length; i += 4) {
-            const bigint = BigInt(`0x${imgData.data[i].toString(16)}${imgData.data[i + 1].toString(16)}${imgData.data[i + 2].toString(16)}${imgData.data[i + 3].toString(16)}`);
+            const bigint = BigInt(`0x${this.toHex(imgData.data[i])}${this.toHex(imgData.data[i + 1])}${this.toHex(imgData.data[i + 2])}${this.toHex(imgData.data[i + 3])}`);
             const index = intOriginalPalette.indexOf(bigint);
 
 
@@ -169,10 +169,15 @@ export default class ImageBitmapGraphic extends Graphic {
             // resizeHeight: Math.ceil(this.height)
         });
         this._cachedPalette = palette;
-
-
     }
 
+    private toHex(num: number): string {
+        let str = num.toString(16);
+        if (2 > str.length) {
+            return "0" + str;
+        }
+        return str
+    }
 
     override async clone(): Promise<Graphic> {
         const graphic = new ImageBitmapGraphic(this.blob);
