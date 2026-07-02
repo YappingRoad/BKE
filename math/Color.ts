@@ -269,6 +269,10 @@ export default class Color {
         return hexString;
     }
 
+    toString():string {
+        return this.asHexRGBA()
+    }
+
 
 
 }

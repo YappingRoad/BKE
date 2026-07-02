@@ -37,6 +37,7 @@ export class Structure implements IStructure {
         if (Array.isArray(value)) {
             return ArrayComponent.of(value);
         }
+        
 
         switch (typeof value) {
             case "function":

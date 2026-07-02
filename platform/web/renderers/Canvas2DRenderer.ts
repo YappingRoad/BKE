@@ -185,7 +185,6 @@ export default class Canvas2DRenderer implements IRenderer {
 
         this.ctx.translate(drawX, drawY);
         this.ctx.rotate(angleRad);
-
         this.ctx.drawImage((image as ImageBitmapGraphic).bitmap, -originX, -originY, width, height);
         this.ctx.rotate(-(angleRad));
         this.ctx.translate(-drawX, -drawY);

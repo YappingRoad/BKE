@@ -1,3 +1,4 @@
+import Color from "../math/Color";
 import MathUtil from "../utilities/MathUtil";
 
 
