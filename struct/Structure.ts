@@ -37,13 +37,16 @@ export class Structure implements IStructure {
         if (Array.isArray(value)) {
             return ArrayComponent.of(value);
         }
-        
+
 
         switch (typeof value) {
             case "function":
             case "undefined":
                 return undefined
             case "string":
+                if (value.startsWith("№")) {
+                    return BigIntComponent.of(BigInt(value.replace("№", "")));
+                }
                 return StringComponent.of(value);
             case "number":
                 return NumberComponent.of(value);
@@ -72,6 +75,9 @@ export class Structure implements IStructure {
                     continue;
                 }
                 obj[key] = value.value;
+                if (typeof value.value === "bigint") {
+                    obj[key] = "№" + value.value.toString()
+                }
                 // console.log(key, value)
             }
             else if (struct[key] instanceof Structure) {

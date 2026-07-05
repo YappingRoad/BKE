@@ -9,7 +9,7 @@ import WebGLRenderer from "./renderers/WebGLRenderer";
 
 export default class Web extends Platform {
     constructor() {
-        super()    
+        super()
     }
     getDefaultRenderer(): IRenderer {
         // return new SVGRenderer();
