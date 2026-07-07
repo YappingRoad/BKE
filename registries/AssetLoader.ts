@@ -94,7 +94,7 @@ export default class AssetLoader {
 
                 const promise = graphic.load();
                 promise.then(() => {
-                    console.log(preloadAsset, PaletteUtil.asHexStrings(graphic.getColorPalette()))
+                    // console.log(preloadAsset, PaletteUtil.asHexStrings(graphic.getColorPalette()))
                     AssetLoader.assets.set(preloadAsset, graphic);
                     AssetLoader.assetLoaded(preloadAsset, callback);
                     AssetLoader.loadPercentage.set(preloadAsset, 1.0);
