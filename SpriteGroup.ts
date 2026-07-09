@@ -36,6 +36,12 @@ export class TypedSpriteGroup<T extends Sprite> extends ComplexSprite implements
         }
         return assets;
     }
+    
+    public override async asyncPreload() {
+        for (const member of this.members) {
+            await member.asyncPreload();
+        }
+    }
 
     public override postPreload(): void {
         for (const member of this.members) {

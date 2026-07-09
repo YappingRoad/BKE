@@ -154,7 +154,10 @@ export default class Mouse {
         window.addEventListener("wheel", (ev) => {
             this.currentData.scroll = ev.deltaY * -0.01;
             this.poll(this.currentData)
-            ev.preventDefault()
+            if (!("chrome" in window)) {
+                ev.preventDefault()
+            }
+
         })
     }
 
@@ -328,7 +331,7 @@ export default class Mouse {
 
         let data: MouseData = {
             x: ((x - width_space) / ratio) + UIRect.x,
-            y: ((y - height_space) / ratio)+ UIRect.y,
+            y: ((y - height_space) / ratio) + UIRect.y,
             rawX: x,
             rawY: y,
             deltaX: dx / ratio,

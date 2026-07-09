@@ -8,6 +8,7 @@ import SpriteGroup from "./SpriteGroup";
 import Renderer from "./renderers/Renderer";
 import Dimensions from "./math/Dimensions";
 import Color from "./math/Color";
+import Timeout from "./math/Timeout";
 
 export default class State implements Drawable, Updatable, Destroyable {
     members: Array<GameObject>;
@@ -50,9 +51,23 @@ export default class State implements Drawable, Updatable, Destroyable {
             }
         }
         AssetLoader.preload(() => {
-            this._preloaded = true;
-            this.postPreload();
+            this.asyncPreload().then(() => {
+
+
+                    this._preloaded = true;
+                    this.postPreload();
+
+
+            })
         });
+    }
+
+    async asyncPreload() {
+        for (const member of this.members) {
+            if (State.isPreloadRequestable(member)) {
+                await member.asyncPreload();
+            }
+        }
     }
 
     postPreload() {
@@ -127,6 +142,8 @@ export default class State implements Drawable, Updatable, Destroyable {
     static isPreloadRequestable(member: GameObject): member is PreloadRequestable {
         return (member as PreloadRequestable).preload !== undefined;
     }
+
+
 
     static isDestroyable(member: GameObject): member is Destroyable {
         return (member as Destroyable).destroy !== undefined;

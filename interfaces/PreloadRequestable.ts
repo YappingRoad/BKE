@@ -3,8 +3,11 @@ import { Structure } from "../struct/Structure";
 
 export default interface PreloadRequestable {
     preload(): Array<PreloadAsset>;
+    asyncPreload():Promise<void>;
     postPreload(): void;
 }
+
+
 
 export interface PreloadAsset {
     path: string,

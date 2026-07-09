@@ -43,10 +43,15 @@ export class Sprite extends Vector2 implements Updatable, Drawable, PreloadReque
     }
 
 
+
     public preload(): Array<PreloadAsset> {
         return [];
     }
 
+    public async asyncPreload(): Promise<void> {
+
+    }
+    
     public postPreload(): void {
 
     }
