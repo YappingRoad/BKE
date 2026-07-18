@@ -11,7 +11,7 @@ if (process.platform == 'win32') {
 // app.disableHardwareAcceleration();
 let win;
 let discord;
-const dev = true;
+const dev = false;
 
 const hidDevices = [
   // Dualsense Controller (PS5)

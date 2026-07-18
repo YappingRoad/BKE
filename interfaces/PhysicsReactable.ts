@@ -6,6 +6,7 @@ import { IStructure, Structure, StructureObjects } from "../struct/Structure";
 export default interface PhysicsReactable {
     lastKeyframe: PhysicsKeyframe;
     keyframe: PhysicsKeyframe;
+    physSleeping:boolean;
     
     collision(event: PhysicsReactableCollideEvent): void;
     getPhysData(): PhysicsReactableData;
@@ -44,7 +45,7 @@ export class PhysicsReactableData extends Structure implements IStructure {
     STRENGTH_LEFT_WALL_BOUNCE: NumberComponent = NumberComponent.of(0.8);
     STRENGTH_RIGHT_WALL_BOUNCE: NumberComponent = NumberComponent.of(0.8);
     STRENGTH_CEILING_BOUNCE: NumberComponent = NumberComponent.of(0.8);
-    SIDES: NumberComponent = NumberComponent.of(0.8);
+    SIDES: NumberComponent = NumberComponent.of(0);
 }
 
 

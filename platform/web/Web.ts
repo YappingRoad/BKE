@@ -30,9 +30,9 @@ export default class Web extends Platform {
         if (Android.isAvailable()) {
             return new WebGLRenderer();
         }
-        if (Electron.isAvailable()) {
-            return new WebGLRenderer("webgl2");
-        }
+        // if (Electron.isAvailable()) {
+        //     return new WebGLRenderer("webgl2");
+        // }
 
 
         // canvas 2d for web because flicker issues when hovering over browser ui 
