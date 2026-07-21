@@ -29,14 +29,17 @@ export default class PhysicsState extends State {
         super.add(member);
     }
 
+    UPDATE_STATE_PHYSICS: boolean = true;
     public override update(elapsed: number) {
-        if (BKE.physUpdateFrame) {
+        if (BKE.physUpdateFrame && this.UPDATE_STATE_PHYSICS) {
             for (let k = 0; k < this.phys.length; k++) {
                 const a = this.phys[k];
+                const type = a.getPhysData().TYPE.value;
+
 
                 // TODO: Implement this in a way that doesnt freeze shit in mid air
                 // a.physSleeping = Math.round(Math.abs(a.keyframe.speed)) < 0.001 && 1 > Math.round(Math.abs(a.keyframe.gravity));
-                a.physSleeping = false;
+                // a.physSleeping = type === PhysicsReactableType.PARTICLES && Math.round(Math.abs(a.keyframe.speed)) < 0.001 && 1 > Math.round(Math.abs(a.keyframe.gravity));
                 if (!a.physSleeping) {
                     for (let i = 0; i < BKE.physFramesToUpdate; i++) {
                         a.updatePhysics();
@@ -62,20 +65,37 @@ export default class PhysicsState extends State {
                 }
 
 
+                if (type === PhysicsReactableType.PARTICLES) {
+                    continue;
+                }
 
                 let collisions = 0;
-
+                let avg = 0;
+                let avgmem = 0;
                 for (let j = 0; j < this.phys.length; j++) {
                     const b = this.phys[j];
-                    if (b === a) {
+                    if (b.keyframe === a.keyframe) {
                         continue;
                     }
+
+                    
+                    // if (MathUtil.getRandomBool()) {
+                    //     break;
+                    // }
+
+
+                    // avg += SpriteUtil.distanceToPoint(a.getPhysRect(), b.getPhysRect());
+                    // avgmem++;
+                    // if ((avg/avgmem) > 300 && avgmem > 32) {
+                    //     break;
+                    // }
+
                     if (PhysicsState.checkPhys(a, b)) {
                         collisions++;
                     }
 
-                    // if (collisions > 1) {
-                    //     continue;
+                    // if (collisions > 1 && MathUtil.getRandomBool()) {
+                    //     break;
                     // }
 
                     // PhysicsState.checkPhys(b, a);
@@ -93,10 +113,12 @@ export default class PhysicsState extends State {
 
     static checkPhys(a: PhysicsReactable, b: PhysicsReactable): boolean {
 
+        // return false;
         let aData = a.getPhysData();
         let bData = b.getPhysData();
 
-        if (aData.TYPE.value === PhysicsReactableType.NON_COLLIDABLE || bData.TYPE.value === PhysicsReactableType.NON_COLLIDABLE) {
+        if (aData.TYPE.value === PhysicsReactableType.NON_COLLIDABLE || bData.TYPE.value === PhysicsReactableType.NON_COLLIDABLE 
+            || aData.TYPE.value === PhysicsReactableType.PARTICLES || bData.TYPE.value === PhysicsReactableType.PARTICLES) {
             return false;
         }
 
@@ -107,12 +129,17 @@ export default class PhysicsState extends State {
         }
 
 
+        // if (aData.TYPE.value === PhysicsReactableType.LIGHT_OBJECTS && bData.TYPE.value === PhysicsReactableType.LIGHT_OBJECTS) {
+        //     return false;
+        // }
         let aRect = a.getPhysRect();
         let bRect = b.getPhysRect();
+
 
         if (!MathUtil.rectsOverlap(aRect, bRect)) {
             return false;
         }
+
 
         // if (SpriteUtil.distanceToPoint(Rectangle.getCenterPoint(aRect), Rectangle.getCenterPoint(bRect)) > (bRect.width + bRect.height) / 2) {
         //     return;

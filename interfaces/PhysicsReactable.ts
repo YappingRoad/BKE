@@ -6,8 +6,8 @@ import { IStructure, Structure, StructureObjects } from "../struct/Structure";
 export default interface PhysicsReactable {
     lastKeyframe: PhysicsKeyframe;
     keyframe: PhysicsKeyframe;
-    physSleeping:boolean;
-    
+    physSleeping: boolean;
+
     collision(event: PhysicsReactableCollideEvent): void;
     getPhysData(): PhysicsReactableData;
     getPhysRect(): Rectangle;
@@ -37,7 +37,7 @@ export class PhysicsReactableData extends Structure implements IStructure {
     TYPE: OptionComponent<PhysicsReactableType> = OptionComponent.of(
         {
             default: PhysicsReactableType.LIGHT_OBJECTS,
-            options: [PhysicsReactableType.ENVIRONMENT, PhysicsReactableType.HEAVY_OBJECTS, PhysicsReactableType.LIGHT_OBJECTS, PhysicsReactableType.NON_COLLIDABLE]
+            options: [PhysicsReactableType.ENVIRONMENT, PhysicsReactableType.HEAVY_OBJECTS, PhysicsReactableType.LIGHT_OBJECTS, PhysicsReactableType.NON_COLLIDABLE, PhysicsReactableType.PARTICLES]
         }
     );
     // if 1.0, it will infinitely bounce an object
@@ -52,19 +52,27 @@ export class PhysicsReactableData extends Structure implements IStructure {
 export enum PhysicsReactableType {
     // all physics types collide with this
     ENVIRONMENT,
+
+
     // Heavy objects collide with other heavy objects and influence each other
     HEAVY_OBJECTS,
     // Light objects collide with other light objects and influence each others speed
     // Light objects can collide with heavy objects but heavy objects do not collide with light objects
     LIGHT_OBJECTS,
+
+
     // Does not collide with anything but still has a hitbox for recieving events
-    NON_COLLIDABLE
+    NON_COLLIDABLE,
+
+    // Dont do any collision events
+    PARTICLES,
+
 }
 
 export interface PhysicsKeyframe {
     x: number,
     y: number,
     speed: number,
-    angleSpin:number,
+    angleSpin: number,
     gravity: number,
 }

@@ -21,7 +21,7 @@ export default class PollStatistics implements Updatable {
 
     updateElapsed() {
         const time = Time.getMS()
-        this.pollElapsed = (time - this.lastTime)/1000;
+        this.pollElapsed = (time - this.lastTime) / 1000;
 
         this.lastTime = time;
     }
@@ -29,10 +29,10 @@ export default class PollStatistics implements Updatable {
     update(elapsed: number) {
 
         if (BKE._frameCounter === 1) {
-        this.updateElapsed()
+            this.updateElapsed()
 
             this.hz = this.pollsThisSecond;
-            if (this.hz !== 0) {
+            if (this.hz > this.averageHz/2) {
                 this.averageNums.push(this.hz);
                 if (this.averageNums.length >= 16) {
                     this.averageNums.splice(0, 1)
