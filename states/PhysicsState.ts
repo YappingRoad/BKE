@@ -78,7 +78,7 @@ export default class PhysicsState extends State {
                         continue;
                     }
 
-                    
+
                     // if (MathUtil.getRandomBool()) {
                     //     break;
                     // }
@@ -117,7 +117,7 @@ export default class PhysicsState extends State {
         let aData = a.getPhysData();
         let bData = b.getPhysData();
 
-        if (aData.TYPE.value === PhysicsReactableType.NON_COLLIDABLE || bData.TYPE.value === PhysicsReactableType.NON_COLLIDABLE 
+        if (aData.TYPE.value === PhysicsReactableType.NON_COLLIDABLE || bData.TYPE.value === PhysicsReactableType.NON_COLLIDABLE
             || aData.TYPE.value === PhysicsReactableType.PARTICLES || bData.TYPE.value === PhysicsReactableType.PARTICLES) {
             return false;
         }
@@ -155,16 +155,17 @@ export default class PhysicsState extends State {
         let rightDistance = SpriteUtil.distanceToPointRaw(bLines.right.midpoint, aLines.left.midpoint);
 
         let min = Math.min(floorDistance, ceilingDistance, leftDistance, rightDistance);
-        if (min === ceilingDistance) {
+        if (min === ceilingDistance && aLines.top.y1 < bLines.bottom.y1) {
             a.collision({ type: CollideType.CEILING, object: b, position: { x: 0, y: bLines.bottom.y1 } });
         }
-        else if (min === floorDistance) {
+        else if (min === floorDistance && aLines.bottom.y1 > bLines.top.y1) {
             a.collision({ type: CollideType.FLOOR, object: b, position: { x: 0, y: bLines.top.y1 } });
         }
-        else if (min === rightDistance) {
+
+        else if (min === rightDistance && aLines.left.x1 < bLines.right.x1) {
             a.collision({ type: CollideType.LEFT_WALL, object: b, position: { x: bLines.right.x1, y: 0 } });
         }
-        else if (min === leftDistance) {
+        else if (min === leftDistance && aLines.right.x1 > bLines.left.x1) {
             a.collision({ type: CollideType.RIGHT_WALL, object: b, position: { x: bLines.left.x1, y: 0 } });
         }
         if (b.physSleeping) {
