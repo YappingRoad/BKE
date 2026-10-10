@@ -22,12 +22,15 @@ export default class MusicSound extends Sound implements Updatable {
 
     setMusicMeta(bpm: number) {
         this.bpm = bpm;
+
         this.updateBPM();
     }
 
     updateBPM() {
         this.bps = ((this.bpm) / (60)) * this.speed;
         this.beatDuration = (1 / (this.bps));
+        // console.log("total beats:" + this.trackDuration/this.beatDuration)
+
     }
 
     currentBeat: number = -1;
@@ -48,12 +51,15 @@ export default class MusicSound extends Sound implements Updatable {
         if (curbeat != this.currentBeat) {
             this.currentBeat = curbeat;
             this.onBeatHit.dispatch(this.currentBeat);
+            // console.log(`beat: ${curbeat}`)
         }
 
         let curstep = Math.trunc(this.currentTime / ((this.beatDuration) / 4)) + 1;
         if (curstep != this.currentStep) {
             this.currentStep = curstep;
             this.onStepHit.dispatch(this.currentStep);
+        
+            // console.log(`step: ${curstep}`)
         }
     }
     override destroy(): void {

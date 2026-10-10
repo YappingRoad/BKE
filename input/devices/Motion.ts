@@ -19,7 +19,7 @@ export default class Motion {
     public onMotionPoll: Callback<void>;
     constructor() {
         this.onMotionPoll = new Callback();
-        this.request();
+        // this.request();
     }
 
     request() {

@@ -92,6 +92,15 @@ export default class GLTextureRenderer {
             1, 1,
         ];
         this.gl.bufferData(this.gl.ARRAY_BUFFER, new Float32Array(texcoords), this.gl.STATIC_DRAW);
+
+        
+        // Setup the attributes to pull data from our buffers
+        this.gl.bindBuffer(this.gl.ARRAY_BUFFER, this.positionBuffer);
+        this.gl.enableVertexAttribArray(this.positionLocation);
+        this.gl.vertexAttribPointer(this.positionLocation, 2, this.gl.FLOAT, false, 0, 0);
+        this.gl.bindBuffer(this.gl.ARRAY_BUFFER, this.texcoordBuffer);
+        this.gl.enableVertexAttribArray(this.texcoordLocation);
+        this.gl.vertexAttribPointer(this.texcoordLocation, 2, this.gl.FLOAT, false, 0, 0);
     }
 
     public drawImageRaw(image: Graphic, x: number, y: number, width: number, height: number, alpha: number): void {
@@ -100,13 +109,6 @@ export default class GLTextureRenderer {
         // Tell WebGL to use this program
         this.gl.useProgram(this.program);
 
-        // Setup the attributes to pull data from our buffers
-        this.gl.bindBuffer(this.gl.ARRAY_BUFFER, this.positionBuffer);
-        this.gl.enableVertexAttribArray(this.positionLocation);
-        this.gl.vertexAttribPointer(this.positionLocation, 2, this.gl.FLOAT, false, 0, 0);
-        this.gl.bindBuffer(this.gl.ARRAY_BUFFER, this.texcoordBuffer);
-        this.gl.enableVertexAttribArray(this.texcoordLocation);
-        this.gl.vertexAttribPointer(this.texcoordLocation, 2, this.gl.FLOAT, false, 0, 0);
 
         // this matrix will convert from pixels to clip space
         let matrix = Matrix4.orthographic(0, this.renderer.canvas.width, this.renderer.canvas.height, 0, -1, 1);
@@ -139,13 +141,7 @@ export default class GLTextureRenderer {
         // Tell WebGL to use our shader program pair
         this.gl.useProgram(this.program);
 
-        // Setup the attributes to pull data from our buffers
-        this.gl.bindBuffer(this.gl.ARRAY_BUFFER, this.positionBuffer);
-        this.gl.enableVertexAttribArray(this.positionLocation);
-        this.gl.vertexAttribPointer(this.positionLocation, 2, this.gl.FLOAT, false, 0, 0);
-        this.gl.bindBuffer(this.gl.ARRAY_BUFFER, this.texcoordBuffer);
-        this.gl.enableVertexAttribArray(this.texcoordLocation);
-        this.gl.vertexAttribPointer(this.texcoordLocation, 2, this.gl.FLOAT, false, 0, 0);
+
         // this matrix will convert from pixels to clip space
         let matrix = Matrix4.orthographic(0, this.renderer.canvas.width, this.renderer.canvas.height, 0, -1, 1);
 
@@ -245,13 +241,6 @@ export default class GLTextureRenderer {
         // Tell WebGL to use our shader program pair
         this.gl.useProgram(this.program);
 
-        // Setup the attributes to pull data from our buffers
-        this.gl.bindBuffer(this.gl.ARRAY_BUFFER, this.positionBuffer);
-        this.gl.enableVertexAttribArray(this.positionLocation);
-        this.gl.vertexAttribPointer(this.positionLocation, 2, this.gl.FLOAT, false, 0, 0);
-        this.gl.bindBuffer(this.gl.ARRAY_BUFFER, this.texcoordBuffer);
-        this.gl.enableVertexAttribArray(this.texcoordLocation);
-        this.gl.vertexAttribPointer(this.texcoordLocation, 2, this.gl.FLOAT, false, 0, 0);
 
         // this matrix will convert from pixels to clip space
         let matrix = Matrix4.orthographic(0, this.renderer.canvas.width, this.renderer.canvas.height, 0, -1, 1);
@@ -325,13 +314,6 @@ export default class GLTextureRenderer {
         // Tell WebGL to use our shader program pair
         this.gl.useProgram(this.program);
 
-        // Setup the attributes to pull data from our buffers
-        this.gl.bindBuffer(this.gl.ARRAY_BUFFER, this.positionBuffer);
-        this.gl.enableVertexAttribArray(this.positionLocation);
-        this.gl.vertexAttribPointer(this.positionLocation, 2, this.gl.FLOAT, false, 0, 0);
-        this.gl.bindBuffer(this.gl.ARRAY_BUFFER, this.texcoordBuffer);
-        this.gl.enableVertexAttribArray(this.texcoordLocation);
-        this.gl.vertexAttribPointer(this.texcoordLocation, 2, this.gl.FLOAT, false, 0, 0);
 
         // this matrix will convert from pixels to clip space
         let matrix = Matrix4.orthographic(0, this.renderer.canvas.width, this.renderer.canvas.height, 0, -1, 1);
@@ -385,13 +367,7 @@ export default class GLTextureRenderer {
         // Tell WebGL to use our shader program pair
         this.gl.useProgram(this.program);
 
-        // Setup the attributes to pull data from our buffers
-        this.gl.bindBuffer(this.gl.ARRAY_BUFFER, this.positionBuffer);
-        this.gl.enableVertexAttribArray(this.positionLocation);
-        this.gl.vertexAttribPointer(this.positionLocation, 2, this.gl.FLOAT, false, 0, 0);
-        this.gl.bindBuffer(this.gl.ARRAY_BUFFER, this.texcoordBuffer);
-        this.gl.enableVertexAttribArray(this.texcoordLocation);
-        this.gl.vertexAttribPointer(this.texcoordLocation, 2, this.gl.FLOAT, false, 0, 0);
+
 
         // this matrix will convert from pixels to clip space
         let matrix = Matrix4.orthographic(0, this.renderer.canvas.width, this.renderer.canvas.height, 0, -1, 1);
@@ -447,13 +423,6 @@ export default class GLTextureRenderer {
         // Tell WebGL to use our shader program pair
         this.gl.useProgram(this.program);
 
-        // Setup the attributes to pull data from our buffers
-        this.gl.bindBuffer(this.gl.ARRAY_BUFFER, this.positionBuffer);
-        this.gl.enableVertexAttribArray(this.positionLocation);
-        this.gl.vertexAttribPointer(this.positionLocation, 2, this.gl.FLOAT, false, 0, 0);
-        this.gl.bindBuffer(this.gl.ARRAY_BUFFER, this.texcoordBuffer);
-        this.gl.enableVertexAttribArray(this.texcoordLocation);
-        this.gl.vertexAttribPointer(this.texcoordLocation, 2, this.gl.FLOAT, false, 0, 0);
 
         // this matrix will convert from pixels to clip space
         let matrix = Matrix4.orthographic(0, this.renderer.canvas.width, this.renderer.canvas.height, 0, -1, 1);

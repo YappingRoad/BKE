@@ -6,7 +6,7 @@ export interface IComponent<T> {
     readonly default: T;
 }
 
-
+// Heavily inspired and based on the way minecraft does their components!
 export class Component<T> implements IComponent<T> {
     readonly default: T;
     value: T;

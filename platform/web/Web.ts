@@ -24,8 +24,10 @@ export default class Web extends Platform {
             return new DOMRenderer();
         }
         if (BrowserUtil.isiOSPWA()) {
-            return new Canvas2DRenderer()
+            // return new DOMRenderer()
             // return new WebGLRenderer("webgl2");
+            return new Canvas2DRenderer();
+
         }
         if (Android.isAvailable()) {
             return new WebGLRenderer();
@@ -37,5 +39,7 @@ export default class Web extends Platform {
 
         // canvas 2d for web because flicker issues when hovering over browser ui 
         return new Canvas2DRenderer();
+
+        //  return new WebGLRenderer("webgl2");
     }
 }

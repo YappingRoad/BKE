@@ -90,6 +90,13 @@ export default class GLComplexTextureRenderer {
             1, 1,
         ];
         this.gl.bufferData(this.gl.ARRAY_BUFFER, new Float32Array(texcoords), this.gl.STATIC_DRAW);
+
+               // Setup the attributes to pull data from our buffers
+        this.gl.bindBuffer(this.gl.ARRAY_BUFFER, this.positionBuffer);
+        this.gl.enableVertexAttribArray(this.positionLocation);
+        this.gl.vertexAttribPointer(this.positionLocation, 2, this.gl.FLOAT, false, 0, 0);
+        this.gl.bindBuffer(this.gl.ARRAY_BUFFER, this.texcoordBuffer);
+
     }
 
     drawImageComplexRaw(image: Graphic, x: number, y: number, data: ComplexSpriteDrawData): void {
@@ -98,12 +105,7 @@ export default class GLComplexTextureRenderer {
         // Tell WebGL to use our shader program pair
         this.gl.useProgram(this.program);
 
-        // Setup the attributes to pull data from our buffers
-        this.gl.bindBuffer(this.gl.ARRAY_BUFFER, this.positionBuffer);
-        this.gl.enableVertexAttribArray(this.positionLocation);
-        this.gl.vertexAttribPointer(this.positionLocation, 2, this.gl.FLOAT, false, 0, 0);
-        this.gl.bindBuffer(this.gl.ARRAY_BUFFER, this.texcoordBuffer);
-
+ 
         //https://stackoverflow.com/questions/29918751/clipping-images-in-webgl
         if (data.crop != undefined) {
             const u0 = data.crop.x / image.width;

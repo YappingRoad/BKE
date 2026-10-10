@@ -50,7 +50,7 @@ export default class WebGLRenderer implements IRenderer {
         this.gl = this.canvas.getContext(this.mode, {
             alpha: false,
             antialias: false,
-            desynchronized: true,
+            desynchronized: false,
             preserveDrawingBuffer: true,
             powerPreference: "high-performance",
             xrCompatible: true,

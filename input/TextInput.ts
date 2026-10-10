@@ -16,7 +16,7 @@ export default class TextInput implements Destroyable {
         return this.inputElem.value;
     }
 
-    set value(str:string) {
+    set value(str: string) {
         this.inputElem.value = str;
     }
 
