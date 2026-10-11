@@ -1,5 +1,6 @@
 import { ComplexSpriteDrawData, TextDrawData, TextDrawDataDropShadowData } from "../renderers/Renderer";
 
+// This probably doesnt need to move for now, but it builds strings used for dom.
 export default class RendererUtil {
     public static buildComplexSpriteDataFilterString(data: ComplexSpriteDrawData, removeOpacity:boolean = false): string {
         let defau1t: ComplexSpriteDrawData = new ComplexSpriteDrawData();

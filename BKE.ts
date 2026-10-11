@@ -16,10 +16,11 @@ import StorageHandler from "./StorageHandler";
 import Plugin from "./Plugin";
 import Callback from "./Callback";
 import { Sprite } from "./Sprite";
+import Platform from "./platform/Platform";
 
 
 export default class BKE {
-    // Entry point for literally everything
+    // Entry point for literally everything (except platform, that is initialized before this)
     public static init() {
         StorageHandler.init();
         Input.init();
@@ -33,15 +34,11 @@ export default class BKE {
                 }
             });
         }
+        Dimensions.init();
 
         Renderer.init();
-        Dimensions.init();
-        window.addEventListener("resize", (ev) => {
-            Dimensions.recalculate()
-        })
-        window.addEventListener("orientationchange", (ev) => {
-            Dimensions.recalculate()
-        })
+
+
     }
 
     public static PAUSE: boolean = false;
@@ -164,7 +161,7 @@ export default class BKE {
         // needed as it can bug out if it changes mid frame
         let cap = BKE.FRAME_CAP;
 
-        requestAnimationFrame((ts) => {
+        Platform.getCurrent().requestAnimationFrame((ts) => {
             let timestep = BKE.getTimestep();
             if (cap > 0) {
                 let newTick: number = Math.trunc(timestep / (1000 / cap));

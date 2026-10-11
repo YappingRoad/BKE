@@ -1,6 +1,7 @@
 export default class DiscordAPI {
     public static isAvailable(): boolean {
         return "electronAPI" in window;
+        // return false;
     }
 
     public static setActivity(activity:SetActivity) {

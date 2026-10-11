@@ -2,15 +2,17 @@ import Callback from "../../Callback";
 import Dimensions from "../../math/Dimensions";
 import Rectangle from "../../math/Rectangle";
 import Vector2 from "../../math/Vector2";
+import Platform from "../../platform/Platform";
 import Renderer from "../../renderers/Renderer";
-import BrowserUtil from "../../utilities/BrowserUtil";
 import MathUtil from "../../utilities/MathUtil";
 import Input from "../Input";
 import MouseData, { ButtonData } from "./interfaces/MouseData";
 
 // Note: this also handles Touch, should we seperate that? todo:
 export default class Mouse {
+    touchEvent: boolean = false;
 
+    lastTouchEventType: TouchEventType = TouchEventType.END;
     public SENSITIVITY: number = 0.5;
     public LOCK_ON_CLICK: boolean = false;
     public LOCKED_RAW_INPUT: boolean = true;
@@ -53,231 +55,13 @@ export default class Mouse {
         locked: false
     };
 
-    touchEvent: boolean = false;
 
-    lastTouchEventType: TouchEventType = TouchEventType.END;
     constructor() {
         this.onMousePoll = new Callback();
         this.onLock = new Callback();
-        // for some reason compiler just decided to give me errors without document as any, i have no idea why
-        if ("onpointerrawupdate" in document) {
-            (window as any).addEventListener("pointerrawupdate", (ev: PointerEvent) => {
-                if (this.touchEvent) return;
-
-                if (Renderer.CURRENT.pointerLocked()) {
-                    this.pointerLockedInputUpdate(ev);
-                }
-                else {
-                    this.updateMouse(ev);
-                }
-            });
-        }
-        else {
-            (window as any).addEventListener("pointermove", (ev: PointerEvent) => {
-                if (this.touchEvent) return;
-
-                if (Renderer.CURRENT.pointerLocked()) {
-                    this.pointerLockedInputUpdate(ev);
-                }
-                else {
-                    this.updateMouse(ev);
-                }
-            });
-        }
-
-        (window as any).addEventListener("pointerdown", (ev: PointerEvent) => {
-            if (this.touchEvent) return;
-            if (Renderer.CURRENT.pointerLocked()) {
-                this.pointerLockedInputUpdate(ev, false);
-            }
-            else {
-                this.updateMouse(ev);
-            }
-        });
-
-        (window as any).addEventListener("pointerup", (ev: PointerEvent) => {
-            if (this.touchEvent) return;
-
-            if (Renderer.CURRENT.pointerLocked()) {
-                this.pointerLockedInputUpdate(ev, false);
-            }
-            else {
-                this.updateMouse(ev);
-            }
-        });
-
-        window.addEventListener("touchstart", (ev) => {
-            this.touchEvent = true;
-
-
-            this.touch(ev.touches[0], TouchEventType.START);
-
-            // can throw errors in chrome
-            if (BrowserUtil.isChrome()) return;
-            try {
-                // to stop scrolling in you guessed it, iOS SAFARI!!!
-                ev.preventDefault();
-            }
-            catch (e) { }
-        });
-
-        window.addEventListener("touchmove", (ev) => {
-            this.touchEvent = true;
-            this.touch(ev.touches[0], TouchEventType.MOVE);
-
-            // can throw errors in chrome
-            if (BrowserUtil.isChrome()) return;
-
-            try {
-                // to stop scrolling in you guessed it, iOS SAFARI!!!
-                ev.preventDefault();
-            }
-            catch (e) { }
-        });
-
-        window.addEventListener("touchend", (ev) => {
-            this.touchEvent = true;
-
-
-            this.touch(ev.touches[0], TouchEventType.END);
-
-            // can throw errors in chrome
-            if (BrowserUtil.isChrome()) return;
-
-            try {
-                // to stop scrolling in you guessed it, iOS SAFARI!!!
-                ev.preventDefault();
-            }
-            catch (e) { }
-        });
-
-        window.addEventListener("wheel", (ev) => {
-            this.currentData.scroll = ev.deltaY * -0.01;
-            this.poll(this.currentData)
-            if (!("chrome" in window)) {
-                ev.preventDefault()
-            }
-
-        })
+      
     }
 
-    touch(ev: Touch, type: TouchEventType = TouchEventType.MOVE) {
-
-
-        this.lastTouchEventType = type;
-        let ratio: number = Math.min(window.innerWidth / Dimensions.GAME_WIDTH, window.innerHeight / Dimensions.GAME_HEIGHT);
-
-        let realGameWidth = (Dimensions.GAME_WIDTH * ratio);
-
-        let width_space = 0;
-        let height_space = 0;
-        if (Math.ceil(realGameWidth) === window.innerWidth) {
-            width_space = (window.innerWidth - (Dimensions.GAME_WIDTH * ratio));
-            height_space = (window.innerHeight - (Dimensions.GAME_HEIGHT * ratio)) / 2;
-        }
-        else {
-            width_space = (window.innerWidth - (Dimensions.GAME_WIDTH * ratio)) / 2;
-            height_space = (window.innerHeight - (Dimensions.GAME_HEIGHT * ratio));
-        }
-        let data: MouseData;
-
-
-        if (type != TouchEventType.END) {
-
-            let dx = type === TouchEventType.START ? 0 : (ev.clientX - this.currentData.rawX);
-            let dy = type === TouchEventType.START ? 0 : (ev.clientY - this.currentData.rawY);
-            data = {
-                x: ((ev.clientX - width_space) / ratio),
-                y: ((ev.clientY - height_space) / ratio),
-                rawX: ev.clientX,
-                rawY: ev.clientY,
-                deltaX: dx / ratio,
-                deltaY: dy / ratio,
-                rawDeltaX: dx,
-                rawDeltaY: dy,
-                left: false,
-                middle: false,
-                right: false,
-                back: false,
-                forward: false,
-                scroll: 0,
-                locked: false
-            };
-
-
-        }
-        else {
-
-            data = {
-                x: this.currentData.x,
-                y: this.currentData.y,
-                rawX: this.currentData.rawX,
-                rawY: this.currentData.rawY,
-                deltaX: 0,
-                deltaY: 0,
-                rawDeltaX: 0,
-                rawDeltaY: 0,
-                left: false,
-                middle: false,
-                right: false,
-                back: false,
-                forward: false,
-                scroll: 0,
-                locked: false
-            }
-        }
-
-        this.poll(data)
-    }
-
-    pointerLockedInputUpdate(ev: MouseEvent | PointerEvent, ignoreButtons: boolean = true) {
-
-        let dx = ev.movementX * this.SENSITIVITY;
-        let dy = ev.movementY * this.SENSITIVITY;
-        this.deltaPoll(dx, dy, ignoreButtons ? this.currentData : {
-            left: this.getPressedRaw(ev, 0),
-            middle: this.getPressedRaw(ev, 2),
-            right: this.getPressedRaw(ev, 1),
-            back: this.getPressedRaw(ev, 3),
-            forward: this.getPressedRaw(ev, 5),
-        })
-
-    }
-
-    deltaPoll(dx: number, dy: number, buttons: ButtonData, clamp: boolean = true) {
-        let ratio: number = Math.min(window.innerWidth / Dimensions.GAME_WIDTH, window.innerHeight / Dimensions.GAME_HEIGHT);
-
-        let x = this.lastData.x + (dx / ratio);
-        let y = this.lastData.y + (dy / ratio);
-
-        const UITop = Dimensions.getUITop();
-        const UIBottom = Dimensions.getUIBottom();
-
-        const UILeft = Dimensions.getUILeft();
-        const UIRight = Dimensions.getUIRight();
-
-
-
-        let data: MouseData = {
-            x: clamp ? Math.min(Math.max(UILeft, x), UIRight) : x,
-            y: clamp ? Math.min(Math.max(UITop, y), UIBottom) : y,
-            rawX: this.lastData.rawX + dx,
-            rawY: this.lastData.rawY + dy,
-            deltaX: dx / ratio,
-            deltaY: dy / ratio,
-            rawDeltaX: dx,
-            rawDeltaY: dy,
-            left: buttons.left,
-            middle: buttons.middle,
-            right: buttons.right,
-            back: buttons.back,
-            forward: buttons.forward,
-            scroll: 0,
-            locked: true
-        };
-        this.poll(data);
-
-    }
 
 
     lock() {
@@ -294,16 +78,7 @@ export default class Mouse {
         return Renderer.CURRENT.pointerLocked();
     }
 
-    updateMouse(ev: PointerEvent | MouseEvent) {
-        this.mousePoll(ev.clientX, ev.clientY, {
-            left: this.getPressedRaw(ev, 0),
-            middle: this.getPressedRaw(ev, 2),
-            right: this.getPressedRaw(ev, 1),
-            back: this.getPressedRaw(ev, 3),
-            forward: this.getPressedRaw(ev, 5),
-        })
 
-    }
 
     mousePoll(x: number, y: number, buttons: ButtonData) {
         const UIRect = Dimensions.UIRect()
@@ -405,15 +180,10 @@ export default class Mouse {
     justUnlocked(): boolean {
         return this.lastData.locked === true && this.currentData.locked === false;
     }
+    
     // todo, actually use point detection instead of a 1px rect
     over(rect: Rectangle): boolean {
         return MathUtil.rectsOverlap({ x: this.currentData.x, y: this.currentData.y, width: 1, height: 1 }, rect);
-    }
-
-    // https://developer.mozilla.org/en-US/docs/Web/API/MouseEvent/buttons#javascript
-    private getPressedRaw(event: MouseEvent, id: number): boolean {
-        // Use binary `&` with the relevant power of 2 to check if a given button is pressed
-        return Boolean(event.buttons & (1 << id));
     }
 
     getVector(): Vector2 {

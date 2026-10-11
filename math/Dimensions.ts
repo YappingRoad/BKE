@@ -1,6 +1,7 @@
 import Android from "../android/Android";
+import Platform from "../platform/Platform";
 import Renderer from "../renderers/Renderer";
-import BrowserUtil from "../utilities/BrowserUtil";
+
 import MathUtil from "../utilities/MathUtil";
 import Rectangle from "./Rectangle";
 import Vector2 from "./Vector2";
@@ -24,7 +25,7 @@ export default class Dimensions {
         let height: number = document.body.clientHeight;
 
         // safari web app
-        if (BrowserUtil.isiOSPWA()) {
+        if (Platform.getCurrent().getPlatformDetails().includes("iospwa")) {
             // safari doesnt update screen dimensions when rotated because fuck you 
             width = document.body.clientWidth > document.body.clientHeight ? screen.height : screen.width;
             height = document.body.clientWidth > document.body.clientHeight ? screen.width : screen.height;
@@ -56,7 +57,7 @@ export default class Dimensions {
         let height: number = document.body.clientHeight;
 
         // safari web app
-        if (BrowserUtil.isiOSPWA()) {
+        if (Platform.getCurrent().getPlatformDetails().includes("iospwa")) {
             // safari doesnt update screen dimensions when rotated because fuck you 
             width = document.body.clientWidth > document.body.clientHeight ? screen.height : screen.width;
             height = document.body.clientWidth > document.body.clientHeight ? screen.width : screen.height;
@@ -87,7 +88,7 @@ export default class Dimensions {
         let height: number = document.body.clientHeight;
 
         // safari web app
-        if (BrowserUtil.isiOSPWA()) {
+        if (Platform.getCurrent().getPlatformDetails().includes("iospwa")) {
             // safari doesnt update screen dimensions when rotated because fuck you 
             width = document.body.clientWidth > document.body.clientHeight ? screen.height : screen.width;
             height = document.body.clientWidth > document.body.clientHeight ? screen.width : screen.height;
@@ -188,7 +189,10 @@ export default class Dimensions {
     private static UIScale: number | undefined = undefined;
     public static getUIScale(): number {
         if (Dimensions.UIScale === undefined) {                                      // older ios fix
-            Dimensions.UIScale = (BrowserUtil.isiOSPWA() || Android.isAvailable()) ? Math.max(1.5, window.devicePixelRatio / 2) : (Dimensions.getScale());
+            Dimensions.UIScale =
+                (Platform.getCurrent().getPlatformDetails().includes("iospwa") || Platform.getCurrent().getPlatformDetails().includes("android"))
+                    ? Math.max(1.5, window.devicePixelRatio / 2)
+                    : (Dimensions.getScale());
 
 
         }

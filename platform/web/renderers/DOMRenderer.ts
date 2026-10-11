@@ -7,9 +7,10 @@ import Vector2 from "../../../math/Vector2";
 import ComplexSprite from "../../../objects/sprites/ComplexSprite";
 import { IRenderer, ComplexSpriteDrawData, TextDrawData } from "../../../renderers/Renderer";
 import { Sprite } from "../../../Sprite";
-import BrowserUtil from "../../../utilities/BrowserUtil";
 import RendererUtil from "../../../utilities/RendererUtil";
+import Platform from "../../Platform";
 import HTMLImageGraphic from "../graphic/HTMLImageGraphic";
+import Web from "../Web";
 
 
 // Smallest Renderer out of all of them, but also runs like shit
@@ -31,7 +32,7 @@ export default class DOMRenderer implements IRenderer {
         this.canvas.style.touchAction = "manipulation";
         this.canvas.autocorrect = false;
         this.canvas.addEventListener("contextmenu", (ev) => {
-            Input.MOUSE.updateMouse(ev);
+             (Platform.getCurrent() as Web).updateMouse(ev);
             ev.preventDefault();
         });
         this.measureElem = document.createElement("div");
@@ -261,7 +262,7 @@ export default class DOMRenderer implements IRenderer {
         elem.style.color = data.color.asHexRGBA();
 
         //firefoxes rendering will just compconstely fucking break
-        if (BrowserUtil.isFirefox()) {
+        if (Platform.getCurrent().getPlatformDetails().includes("firefox")) {
             elem.style.height = "100%"
         }
         else {

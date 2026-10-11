@@ -21,12 +21,6 @@ export default class Input {
     static MOTION: Motion;
     static CONTROLLERS: Array<Controller>;
 
-    private static BLACKLISTED_CONTROLLERS: string[] = [
-        // No fucking clue what this is, shows up on my pc and does 0 input
-        // Might be from some software like steam but i doubt its steam itself
-        "Virtual Multitouch Device (Vendor: 001f Product: ba1c)",
-        "PS5 Controller (STANDARD GAMEPAD Vendor: 054c Product: 0ce6)"
-    ]
 
     public static onRawGamepadConnect: Callback<GamepadEvent> = new Callback();
     public static init() {
@@ -36,37 +30,18 @@ export default class Input {
         Input.CONTROLLERS = []
 
 
-        window.addEventListener("gamepadconnected", (ev) => {
-            console.log("Controller connected:")
-            console.log(ev.gamepad)
 
-            if (Input.BLACKLISTED_CONTROLLERS.indexOf(ev.gamepad.id) === -1) {
-                Input.onRawGamepadConnect.dispatch(ev);
-            }
-
-            console.log(Input.CONTROLLERS)
-        })
-
-        window.addEventListener("gamepaddisconnected", (ev) => {
-            console.log("Controller disconnected:")
-            console.log(ev.gamepad)
-        })
-
-        if ("hid" in navigator) {
-            navigator.hid.addEventListener("connect", (ev) => {
-                this.onHidConnect(ev.device);
-            })
-            navigator.hid.addEventListener("disconnect", (ev) => {
-                if (this.hidDevices.indexOf(ev.device) === -1) {
-                    return;
-                }
-                Input.onHidDisconnect.dispatch(ev.device)
-                this.hidDevices.splice(this.hidDevices.indexOf(ev.device), 1);
-            })
-        }
-        // if ("usb" in navigator) {
-        //     (navigator.usb as any).requestDevice({ filters: [{ vendorId: 0x057e, productId: 0x0306 }] });
-        //     // (navigator.bluetooth as any).requestDevice({ filters: [{ manufacturerData: [{ companyIdentifier: 1363 }] }] })
+        // if ("hid" in navigator) {
+        //     navigator.hid.addEventListener("connect", (ev) => {
+        //         Input.onHidConnect(ev.device);
+        //     })
+        //     navigator.hid.addEventListener("disconnect", (ev) => {
+        //         if (this.hidDevices.indexOf(ev.device) === -1) {
+        //             return;
+        //         }
+        //         Input.onHidDisconnect.dispatch(ev.device)
+        //         this.hidDevices.splice(this.hidDevices.indexOf(ev.device), 1);
+        //     })
         // }
     }
 
@@ -76,22 +51,22 @@ export default class Input {
             case ControllerType.DUALSENSE:
                 break;
             case ControllerType.WIIMOTE:
-                if ("hid" in navigator) {
-                    navigator.hid.requestDevice({ filters: [{ vendorId: 0x057e, productId: 0x0306 }] }).then((devices) => {
-                        for (const device of devices) {
-                            this.onHidConnect(device);
-                        }
-                    })
-                }
+                // if ("hid" in navigator) {
+                //     navigator.hid.requestDevice({ filters: [{ vendorId: 0x057e, productId: 0x0306 }] }).then((devices) => {
+                //         for (const device of devices) {
+                //             this.onHidConnect(device);
+                //         }
+                //     })
+                // }
                 break;
             case ControllerType.JOYCON:
-                if ("hid" in navigator) {
-                    navigator.hid.requestDevice({ filters: [{ vendorId: 0x057e, productId: 0x2006 }, { vendorId: 0x057e, productId: 0x2007 }] }).then((devices) => {
-                        for (const device of devices) {
-                            this.onHidConnect(device);
-                        }
-                    })
-                }
+                // if ("hid" in navigator) {
+                //     navigator.hid.requestDevice({ filters: [{ vendorId: 0x057e, productId: 0x2006 }, { vendorId: 0x057e, productId: 0x2007 }] }).then((devices) => {
+                //         for (const device of devices) {
+                //             this.onHidConnect(device);
+                //         }
+                //     })
+                // }
                 break;
             case ControllerType.GENERIC:
                 break;
@@ -140,13 +115,13 @@ export default class Input {
     // this probably makes gamepad api have input delay, which just adds to the sadness that gamepad api has nothing
     public static update(elapsed: number) {
         Input.pollStats.update(elapsed);
-        if ("hid" in navigator) {
-            navigator.hid.getDevices().then((devices) => {
-                devices.forEach((dev) => {
-                    Input.onHidConnect(dev);
-                })
-            })
-        }
+        // if ("hid" in navigator) {
+        //     navigator.hid.getDevices().then((devices) => {
+        //         devices.forEach((dev) => {
+        //             Input.onHidConnect(dev);
+        //         })
+        //     })
+        // }
         for (const controller of Input.CONTROLLERS) {
             controller.update()
         }

@@ -7,10 +7,11 @@ import Vector2 from "../../../math/Vector2";
 import ComplexSprite from "../../../objects/sprites/ComplexSprite";
 import { IRenderer, ComplexSpriteDrawData, TextDrawData, ConicGradientDrawData, ConicGradientPoint } from "../../../renderers/Renderer";
 import { Sprite } from "../../../Sprite";
-import BrowserUtil from "../../../utilities/BrowserUtil";
 import MathUtil from "../../../utilities/MathUtil";
 import RendererUtil from "../../../utilities/RendererUtil";
+import Platform from "../../Platform";
 import ImageBitmapGraphic from "../graphic/ImageBitmapGraphic";
+import Web from "../Web";
 
 export default class Canvas2DRenderer implements IRenderer {
     holder: HTMLDivElement;
@@ -33,7 +34,7 @@ export default class Canvas2DRenderer implements IRenderer {
         this.canvas.id = "gamecanvas";
         this.holder.appendChild(this.canvas);
         this.canvas.addEventListener("contextmenu", (ev) => {
-            Input.MOUSE.updateMouse(ev);
+            (Platform.getCurrent() as Web).updateMouse(ev);
             ev.preventDefault();
         });
         this.ctx = this.canvas.getContext("2d", {
@@ -63,12 +64,16 @@ export default class Canvas2DRenderer implements IRenderer {
     }
 
     supportsPointerLock(): boolean {
-        return true && !BrowserUtil.isSafari();
+        return true && !Platform.getCurrent().getPlatformDetails().includes("safari");
     }
 
     lockPointer(rawInput: boolean): void {
         // only chromium browsers and firefox seem to support this
-        if (rawInput && BrowserUtil.isChrome() || BrowserUtil.isFirefox()) {
+
+
+        const isChrome = Platform.getCurrent().getPlatformDetails().includes("chrome");
+        const isFirefox = Platform.getCurrent().getPlatformDetails().includes("firefox");
+        if (rawInput && isChrome || isFirefox) {
             document.body.requestPointerLock({ unadjustedMovement: rawInput }).catch(() => {
                 // not all platforms support raw input
                 document.body.requestPointerLock();

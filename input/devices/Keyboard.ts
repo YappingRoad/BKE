@@ -1,4 +1,5 @@
 import Callback from "../../Callback";
+import Platform from "../../platform/Platform";
 import Input from "../Input";
 
 
@@ -77,13 +78,14 @@ export default class Keyboard {
     public onKeyPoll: Callback<void> = new Callback();
 
     constructor() {
-        document.addEventListener("keydown", (ev) => {
-            this.onKeyDown(ev);
-        });
+        Platform.getCurrent().onKeyDown.add((code)=>{
+            this.onKeyDown(code);
+        })
 
-        document.addEventListener("keyup", (ev) => {
-            this.onKeyUp(ev);
-        });
+        
+        Platform.getCurrent().onKeyUp.add((code)=>{
+            this.onKeyUp(code);
+        })
     }
 
 
@@ -91,25 +93,25 @@ export default class Keyboard {
 
     private pressed: Array<Key> = [];
 
-    private onKeyDown(ev:KeyboardEvent) {
+    private onKeyDown(code:string) {
         this.last = [];
         for (const key of this.pressed) {
             this.last.push(key);
         }
-        if (!this.pressed.includes(ev.code as Key)) {
-            this.pressed.push(ev.code as Key);
+        if (!this.pressed.includes(code as Key)) {
+            this.pressed.push(code as Key);
         }
         this.onKeyPoll.dispatch();
         Input.poll()
     }
 
-    private onKeyUp(ev:KeyboardEvent) {
+    private onKeyUp(code:string) {
         this.last = [];
         for (const key of this.pressed) {
             this.last.push(key);
         }
-        if (this.pressed.includes(ev.code as Key)) {
-            this.pressed.splice(this.pressed.indexOf(ev.code as Key), 1);
+        if (this.pressed.includes(code as Key)) {
+            this.pressed.splice(this.pressed.indexOf(code as Key), 1);
         }
         this.onKeyPoll.dispatch();
         Input.poll()

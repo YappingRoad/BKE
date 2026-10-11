@@ -1,10 +1,11 @@
+import Platform from "./platform/Platform";
+import { IStorage } from "./platform/Platform";
 export default class StorageHandler {
-    private static storage: Storage;
+    private static storage: IStorage;
     
     static init() {
-        StorageHandler.storage = window.localStorage;
-        // for security reasons so no one starts hacking bill accounts noooo
-        delete (window as any).localStorage;
+        StorageHandler.storage = Platform.getCurrent().getStorage();
+
     }
 
     static clear(): void {

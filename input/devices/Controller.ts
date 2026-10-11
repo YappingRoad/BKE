@@ -130,11 +130,11 @@ export default class Controller implements Destroyable {
 
     touchToScreen() {
         if (this.currentData.R_TOUCHPAD.contact) {
-            Input.MOUSE.mousePoll(
-                MathUtil.normalize(this.currentData.R_TOUCHPAD.x, -1.0, 1.0, 0, window.innerWidth),
-                MathUtil.normalize(this.currentData.R_TOUCHPAD.y, -1.0, 1.0, 0, window.innerHeight),
-                Input.MOUSE.currentData
-            )
+            // Input.MOUSE.mousePoll(
+            //     MathUtil.normalize(this.currentData.R_TOUCHPAD.x, -1.0, 1.0, 0, window.innerWidth),
+            //     MathUtil.normalize(this.currentData.R_TOUCHPAD.y, -1.0, 1.0, 0, window.innerHeight),
+            //     Input.MOUSE.currentData
+            // )
         }
         else {
             this.deltaClear()
@@ -143,11 +143,11 @@ export default class Controller implements Destroyable {
 
     touchpadToPointer() {
         if (this.currentData.R_TOUCHPAD.contact) {
-            Input.MOUSE.mousePoll(
-                Input.MOUSE.currentData.rawX + this.x.diffOf(MathUtil.normalize(this.currentData.R_TOUCHPAD.x, -1.0, 1.0, 0, window.innerWidth)),
-                Input.MOUSE.currentData.rawY + this.y.diffOf(MathUtil.normalize(this.currentData.R_TOUCHPAD.y, -1.0, 1.0, 0, window.innerHeight)),
-                Input.MOUSE.currentData
-            )
+            // Input.MOUSE.mousePoll(
+            //     Input.MOUSE.currentData.rawX + this.x.diffOf(MathUtil.normalize(this.currentData.R_TOUCHPAD.x, -1.0, 1.0, 0, window.innerWidth)),
+            //     Input.MOUSE.currentData.rawY + this.y.diffOf(MathUtil.normalize(this.currentData.R_TOUCHPAD.y, -1.0, 1.0, 0, window.innerHeight)),
+            //     Input.MOUSE.currentData
+            // )
         }
         else {
             this.deltaClear()
@@ -166,12 +166,12 @@ export default class Controller implements Destroyable {
             this.oy += y;
         }
 
-        Input.MOUSE.deltaPoll(
-            this.x.diffOf(-this.ox),
-            this.y.diffOf(-this.oy),
-            Input.MOUSE.currentData,
-            false
-        )
+        // Input.MOUSE.deltaPoll(
+        //     this.x.diffOf(-this.ox),
+        //     this.y.diffOf(-this.oy),
+        //     Input.MOUSE.currentData,
+        //     false
+        // )
         if (this.currentData.R_SHOULDER.bumper) {
             this.recenter()
         }
@@ -224,7 +224,7 @@ export default class Controller implements Destroyable {
     }
 
     private recenter() {
-        Input.MOUSE.mousePoll(window.innerWidth / 2, window.innerHeight / 2, Input.MOUSE.currentData)
+        // Input.MOUSE.mousePoll(window.innerWidth / 2, window.innerHeight / 2, Input.MOUSE.currentData)
     }
 
     public getStickDirection(side: ControllerSide, direction: Directions): number {

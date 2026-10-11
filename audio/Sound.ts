@@ -1,8 +1,9 @@
 
 import Destroyable from "../interfaces/Destroyable";
 import { SoundChannel } from "./SoundChannel";
-
 /* Simple sound object with volume controls */
+
+// TODO: Make this and others a interface, SOUND REWRITE!
 export default class Sound implements Destroyable {
     static context: AudioContext = new AudioContext();
     static sounds: Array<Sound> = [];

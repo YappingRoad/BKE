@@ -1,6 +1,6 @@
 import Callback from "../Callback";
 import Destroyable from "../interfaces/Destroyable";
-import BrowserUtil from "../utilities/BrowserUtil";
+import Platform from "../platform/Platform";
 import MathUtil from "../utilities/MathUtil";
 
 export default class TextInput implements Destroyable {
@@ -107,7 +107,7 @@ export default class TextInput implements Destroyable {
 
         //guh
         if (!fromEvent) {
-            if (BrowserUtil.isSafari()) {
+            if (Platform.getCurrent().getPlatformDetails().includes("safari")) {
                 this.inputElem.style.opacity = "1";
                 this.inputElem.style.left = "10dvw";
                 this.inputElem.style.width = "80dvw";
@@ -127,7 +127,7 @@ export default class TextInput implements Destroyable {
     }
 
     blur(fromEvent: boolean = false) {
-        if (BrowserUtil.isSafari()) {
+        if (Platform.getCurrent().getPlatformDetails().includes("safari")) {
             this.inputElem.style.opacity = "0";
         }
         if (!fromEvent) {

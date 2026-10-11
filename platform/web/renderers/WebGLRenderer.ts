@@ -9,8 +9,9 @@ import ComplexSprite from "../../../objects/sprites/ComplexSprite";
 import AssetLoader from "../../../registries/AssetLoader";
 import { IRenderer, ComplexSpriteDrawData, TextDrawData } from "../../../renderers/Renderer";
 import { Sprite } from "../../../Sprite";
-import BrowserUtil from "../../../utilities/BrowserUtil";
+import Platform from "../../Platform";
 import WebGLGraphic from "../graphic/WebGLGraphic";
+import Web from "../Web";
 import GLComplexTextureRenderer from "./gl/GLComplexTextureRenderer";
 import GLTextureRenderer from "./gl/GLTextureRenderer";
 
@@ -43,7 +44,7 @@ export default class WebGLRenderer implements IRenderer {
         this.canvas.id = "gamecanvas";
         this.holder.appendChild(this.canvas);
         this.canvas.addEventListener("contextmenu", (ev) => {
-            Input.MOUSE.updateMouse(ev);
+            (Platform.getCurrent() as Web).updateMouse(ev);
             ev.preventDefault();
         });
 
@@ -131,11 +132,17 @@ export default class WebGLRenderer implements IRenderer {
 
 
     supportsPointerLock(): boolean {
-        return true && !BrowserUtil.isSafari();
+
+        const isChrome = Platform.getCurrent().getPlatformDetails().includes("chrome");
+        const isFirefox = Platform.getCurrent().getPlatformDetails().includes("firefox");
+        return true && (isChrome || isFirefox);
     }
 
     lockPointer(rawInput: boolean = true): void {
-        if (rawInput && BrowserUtil.isChrome() || BrowserUtil.isFirefox()) {
+
+        const isChrome = Platform.getCurrent().getPlatformDetails().includes("chrome");
+        const isFirefox = Platform.getCurrent().getPlatformDetails().includes("firefox");
+        if (rawInput && isChrome || isFirefox) {
             document.body.requestPointerLock({ unadjustedMovement: rawInput }).catch(() => {
                 // not all platforms support raw input
                 document.body.requestPointerLock();

@@ -1,7 +1,7 @@
 import Graphic, { ColorPalette } from "../../../graphic/Graphic";
 import Color from "../../../math/Color";
 export type OffscreenContext = CanvasRenderingContext2D | OffscreenCanvasRenderingContext2D;
-
+type ImageDataArray = Uint8ClampedArray<ArrayBuffer>;
 export default class ImageBitmapGraphic extends Graphic {
     public img!: HTMLImageElement;
     public bitmap!: ImageBitmap;
