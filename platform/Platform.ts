@@ -1,3 +1,7 @@
+import { IMusicSound } from "../audio/IMusicSound";
+import { IPannerSound } from "../audio/IPannerSound";
+import { ISound } from "../audio/ISound";
+import { IStereoPannerSound } from "../audio/IStereoPannerSound";
 import Callback from "../Callback";
 import Renderer, { IRenderer } from "../renderers/Renderer";
 export interface IStorage {
@@ -89,6 +93,47 @@ export default class Platform {
         return 0;
     }
 
+
+    loadPathAsBlob(path: string): Promise<Blob> {
+        return new Promise<Blob>((resolve, reject) => {
+            resolve(new Blob())
+        })
+    }
+
+
+
+    loadPathAsArrayBuffer(path: string): Promise<ArrayBuffer> {
+        return new Promise<ArrayBuffer>((resolve, reject) => {
+            resolve(new ArrayBuffer())
+        })
+    }
+
+
+    loadPathAsText(path: string): Promise<string> {
+        return new Promise<string>((resolve, reject) => {
+            resolve("")
+        })
+    }
+
+
+
+    async loadSound(buffer: ArrayBuffer): Promise<ISound> {
+        return ({} as ISound);
+    }
+    async loadPannerSound(buffer: ArrayBuffer):  Promise<IPannerSound> {
+        return ({} as IPannerSound);
+    }
+    async loadStereoPannerSound(buffer: ArrayBuffer):  Promise<IStereoPannerSound> {
+        return ({} as IStereoPannerSound);
+    } 
+    
+    async loadMusicSound(buffer: ArrayBuffer):  Promise<IMusicSound> {
+        return ({} as IMusicSound);
+    }
+
+    isFocused(): boolean {
+        return true;
+    }
 
     onKeyDown: Callback<string> = new Callback()
     onKeyUp: Callback<string> = new Callback()

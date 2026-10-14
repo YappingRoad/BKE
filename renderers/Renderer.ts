@@ -106,6 +106,14 @@ export interface IRenderer {
 
     getCanvasDimensions(): Vector2;
 
+    getSafeAreaDimensions(): Vector2;
+
+    getSafeAreaOffset(): Vector2;
+
+    getDocumentSize():Vector2;
+
+    getDevicePixelRatio():number;
+
     /* INFO */
 
     getName(): string;
@@ -113,9 +121,7 @@ export interface IRenderer {
     // the device being used to actually do the rendering
     getRenderDeviceName(): string;
 
-    getSafeAreaDimensions(): Vector2;
-
-    getSafeAreaOffset(): Vector2;
+    
 }
 
 export interface TextDrawData {

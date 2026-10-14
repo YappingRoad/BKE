@@ -1,9 +1,16 @@
 import Main from "../../../Main";
-import Android from "../../android/Android";
-import Electron from "../../electron/Electron";
+import { IMusicSound } from "../../audio/IMusicSound";
+import { IPannerSound } from "../../audio/IPannerSound";
+import { ISound } from "../../audio/ISound";
+import { IStereoPannerSound } from "../../audio/IStereoPannerSound";
+import WebMusicSound from "./sound/WebMusicSound";
+import WebPannerSound from "./sound/WebPannerSound";
+import WebSound from "./sound/WebSound";
+import WebStereoPannerSound from "./sound/WebStereoPannerSound";
 import MouseData, { ButtonData } from "../../input/devices/interfaces/MouseData";
 import { TouchEventType } from "../../input/devices/Mouse";
 import Input from "../../input/Input";
+import { PreloadAsset, SoundMode } from "../../interfaces/PreloadRequestable";
 import Dimensions from "../../math/Dimensions";
 import Renderer, { IRenderer } from "../../renderers/Renderer";
 import Platform, { IStorage } from "../Platform";
@@ -37,6 +44,11 @@ export default class Web extends Platform {
 
         if (("standalone" in window.navigator && window.navigator.standalone == true && 'WebkitAppearance' in document.documentElement.style)) {
             this.detailsArr.push("iospwa")
+        }
+
+
+        if ("electronAPI" in window) {
+            this.detailsArr.push("electron");
         }
 
         document.addEventListener("keydown", (ev) => {
@@ -399,11 +411,103 @@ export default class Web extends Platform {
         });
     }
 
-    
+    override timeMS(): number {
+        return ("performance" in window) ? window.performance.now() : document.timeline.currentTime as number;
+    }
 
 
-    override timeMS():number {
-        return document.timeline.currentTime as number;
+    override loadPathAsBlob(path: string): Promise<Blob> {
+        return new Promise<Blob>((resolve, reject) => {
+            const request = new XMLHttpRequest();
+            request.open('GET', path, true);
+            request.responseType = 'blob';
+            request.onload = function () {
+                resolve(request.response as Blob);
+            }
+            request.onerror = function (err) {
+                reject(err)
+            }
+            request.send()
+        })
+    }
+
+    override loadPathAsArrayBuffer(path: string): Promise<ArrayBuffer> {
+        return new Promise<ArrayBuffer>((resolve, reject) => {
+            const request = new XMLHttpRequest();
+            request.open('GET', path, true);
+            request.responseType = 'arraybuffer';
+            request.onload = function () {
+                resolve(request.response as ArrayBuffer);
+            }
+            request.onerror = function (err) {
+                reject(err)
+            }
+            request.send()
+        })
+    }
+
+    override loadPathAsText(path: string): Promise<string> {
+        return new Promise<string>((resolve, reject) => {
+            const request = new XMLHttpRequest();
+            request.open('GET', path, true);
+            request.responseType = 'text';
+            request.onload = function () {
+                resolve(request.response as string);
+            }
+            request.onerror = function (err) {
+                reject(err)
+            }
+            request.send()
+        })
+    }
+
+    override isFocused(): boolean {
+        return document.hasFocus();
+    }
+
+
+
+    override loadSound(buffer: ArrayBuffer): Promise<ISound> {
+        return new Promise<ISound>((resolve, reject) => {
+            WebSound.context.decodeAudioData(buffer, function (buffer: any) {
+                resolve(new WebSound(buffer))
+
+            }, function (err) {
+                reject(err)
+            });
+        });
+    }
+    override loadPannerSound(buffer: ArrayBuffer): Promise<IPannerSound> {
+        return new Promise<IPannerSound>((resolve, reject) => {
+            WebSound.context.decodeAudioData(buffer, function (buffer: any) {
+                resolve(new WebPannerSound(buffer))
+
+            }, function (err) {
+                reject(err)
+            });
+        });
+    }
+
+    override loadStereoPannerSound(buffer: ArrayBuffer): Promise<IStereoPannerSound> {
+        return new Promise<IStereoPannerSound>((resolve, reject) => {
+            WebSound.context.decodeAudioData(buffer, function (buffer: any) {
+                resolve(new WebStereoPannerSound(buffer))
+
+            }, function (err) {
+                reject(err)
+            });
+        });
+    }
+
+    override loadMusicSound(buffer: ArrayBuffer): Promise<IMusicSound> {
+        return new Promise<IMusicSound>((resolve, reject) => {
+            WebSound.context.decodeAudioData(buffer, function (buffer: any) {
+                resolve(new WebMusicSound(buffer))
+
+            }, function (err) {
+                reject(err)
+            });
+        });
     }
 }
 
@@ -435,7 +539,7 @@ function initialize() {
     (document.getElementById("canvasholder") as HTMLDivElement).style.display = "grid";
 });
 
-if (Electron.isAvailable() || window.sessionStorage.getItem("restarting") === "yes") {
+if ("electronAPI" in window || window.sessionStorage.getItem("restarting") === "yes") {
     window.sessionStorage.clear();
 
     initialize();

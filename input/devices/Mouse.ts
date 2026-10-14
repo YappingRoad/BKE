@@ -59,7 +59,7 @@ export default class Mouse {
     constructor() {
         this.onMousePoll = new Callback();
         this.onLock = new Callback();
-      
+
     }
 
 
@@ -81,22 +81,23 @@ export default class Mouse {
 
 
     mousePoll(x: number, y: number, buttons: ButtonData) {
+
         const UIRect = Dimensions.UIRect()
+        const docSize = Renderer.CURRENT.getDocumentSize()
 
-
-        let ratio: number = Math.min(window.innerWidth / UIRect.width, window.innerHeight / UIRect.height);
+        let ratio: number = Math.min(docSize.x / UIRect.width, docSize.y / UIRect.height);
 
         let realGameWidth = (UIRect.width * ratio);
 
         let width_space = 0;
         let height_space = 0;
-        if (Math.ceil(realGameWidth) === window.innerWidth) {
-            width_space = (window.innerWidth - (UIRect.width * ratio));
-            height_space = (window.innerHeight - (UIRect.height * ratio)) / 2;
+        if (Math.ceil(realGameWidth) === docSize.x) {
+            width_space = (docSize.x - (UIRect.width * ratio));
+            height_space = (docSize.y - (UIRect.height * ratio)) / 2;
         }
         else {
-            width_space = (window.innerWidth - (UIRect.width * ratio)) / 2;
-            height_space = (window.innerHeight - (UIRect.height * ratio));
+            width_space = (docSize.x - (UIRect.width * ratio)) / 2;
+            height_space = (docSize.y - (UIRect.height * ratio));
         }
 
 
@@ -121,6 +122,10 @@ export default class Mouse {
             forward: buttons.forward,
             locked: false
         };
+
+        if (this.lastData == data) {
+            return;
+        }
         this.poll(data);
         if (this.LOCK_ON_CLICK && this.justPressedLeft()) {
             this.lock();
@@ -180,7 +185,7 @@ export default class Mouse {
     justUnlocked(): boolean {
         return this.lastData.locked === true && this.currentData.locked === false;
     }
-    
+
     // todo, actually use point detection instead of a 1px rect
     over(rect: Rectangle): boolean {
         return MathUtil.rectsOverlap({ x: this.currentData.x, y: this.currentData.y, width: 1, height: 1 }, rect);

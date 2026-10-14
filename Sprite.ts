@@ -73,7 +73,7 @@ export class Sprite extends Vector2 implements Updatable, Drawable, PreloadReque
     }
 
     public updateHitbox(image: Graphic) {
-        if (image === null) {
+        if (image === null || image === undefined) {
             return;
         }
         this.hitbox.x = Math.abs(image.width * this.scale.x);

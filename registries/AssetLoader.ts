@@ -1,19 +1,18 @@
 import { SoundMode, PreloadAsset, PreloadAssetType } from "../interfaces/PreloadRequestable";
-import Sound from "../audio/Sound";
-import PannerSound from "../audio/PannerSound";
-import StereoPannerSound from "../audio/StereoPannerSound";
 import Callback from "../Callback";
-import MusicSound from "../audio/MusicSound";
-import Electron from "../electron/Electron";
 import Time from "../math/Time";
 import Graphic from "../graphic/Graphic";
 import Renderer from "../renderers/Renderer";
 import BKE from "../BKE";
-import PaletteUtil from "../utilities/PaletteUtil";
+import Platform from "../platform/Platform";
+import { IPannerSound } from "../audio/IPannerSound";
+import { ISound } from "../audio/ISound";
+import { IStereoPannerSound } from "../audio/IStereoPannerSound";
+import { IMusicSound } from "../audio/IMusicSound";
 
 // todo update to new graphic class
 
-export type AssetObject = Graphic | Sound | string;
+export type AssetObject = Graphic | ISound | string;
 
 export default class AssetLoader {
     static cacheQueue: Array<PreloadAsset> = [];
@@ -84,75 +83,84 @@ export default class AssetLoader {
         return new Promise<void>((resolve) => {
             AssetLoader.loadPercentage.set(preloadAsset, 0);
             AssetLoader.loadPercentage.set(preloadAsset, 0);
-
-            const request = new XMLHttpRequest();
+            BKE.loadstatus = "Loading images...";
+            AssetLoader.loadPercentage.set(preloadAsset, 0.0);
+            console.log("ASSETLOADER: Loading " + preloadAsset.path)
             const path = preloadAsset.path;
-            request.open('GET', path, true);
-            request.responseType = 'blob';
-            request.onload = function () {
-                const graphic = Renderer.CURRENT.createGraphic(request.response as Blob)
-
+            Platform.getCurrent().loadPathAsBlob(path).then((blob) => {
+                console.log("HIIII IVE LOADED")
+                const graphic = Renderer.CURRENT.createGraphic(blob)
                 const promise = graphic.load();
                 promise.then(() => {
-                    // console.log(preloadAsset, PaletteUtil.asHexStrings(graphic.getColorPalette()))
+
                     AssetLoader.assets.set(preloadAsset, graphic);
                     AssetLoader.assetLoaded(preloadAsset, callback);
                     AssetLoader.loadPercentage.set(preloadAsset, 1.0);
                     resolve();
                 });
-                promise.catch(() => {
+                promise.catch((err) => {
+                    console.log(err)
                     AssetLoader.assetNotLoaded(preloadAsset, callback);
                     resolve();
                 })
-                
-              
 
-            }
-            request.onprogress = function (ev) {
-                BKE.loadstatus = "Loading images...";
-                AssetLoader.loadPercentage.set(preloadAsset, (ev.loaded / ev.total) * 0.75);
-            }
-            request.onerror = function () {
+            }).catch((err) => {
+                console.log(err)
+
                 AssetLoader.assetNotLoaded(preloadAsset, callback);
                 resolve();
-            }
-            request.send();
+            })
         });
     }
 
     public static loadSound(preloadAsset: PreloadAsset, callback: VoidFunction): Promise<void> {
         return new Promise<void>((resolve) => {
-            AssetLoader.loadPercentage.set(preloadAsset, 0);
+            BKE.loadstatus = "Loading sounds...";
+            AssetLoader.loadPercentage.set(preloadAsset, 0.0);
 
-            let request = new XMLHttpRequest();
+
             let path = preloadAsset.path;
-            if (!Electron.isAvailable() && preloadAsset.soundMode != undefined && preloadAsset.soundMode === SoundMode.MUSIC) {
-                path = path.replace(".wav", ".mp3");
-            }
-            request.open('GET', path, true);
-            //webaudio paramaters
-            request.responseType = 'arraybuffer';
-            request.onload = function () {
-                Sound.context.decodeAudioData(request.response, function (buffer: any) {
-                    AssetLoader.assets.set(preloadAsset, AssetLoader.createSoundObject(buffer, preloadAsset));
+            // if (!(Platform.getCurrent().getPlatformDetails().includes("electron")) && preloadAsset.soundMode != undefined && preloadAsset.soundMode === SoundMode.MUSIC) {
+            //     path = path.replace(".wav", ".mp3");
+            // }
+            console.log("ASSETLOADER: Loading " + preloadAsset.path)
+
+            Platform.getCurrent().loadPathAsArrayBuffer(path).then((response) => {
+                // AssetLoader.assets.set(preloadAsset, "");
+                // AssetLoader.assetLoaded(preloadAsset, callback);
+                // AssetLoader.loadPercentage.set(preloadAsset, 1.0);
+                let promise: Promise<ISound>;
+                if (preloadAsset.soundMode === SoundMode.PANNER) {
+                    promise = Platform.getCurrent().loadPannerSound(response);
+                }
+                else if (preloadAsset.soundMode === SoundMode.STEREO_PANNER) {
+                    promise = Platform.getCurrent().loadStereoPannerSound(response);
+                }
+                else if (preloadAsset.soundMode === SoundMode.MUSIC) {
+                    promise = Platform.getCurrent().loadMusicSound(response);
+                }
+                else {
+                    promise = Platform.getCurrent().loadSound(response);
+                }
+
+                promise.then((sound) => {
+                    sound.create();
+                    AssetLoader.assets.set(preloadAsset, sound);
                     AssetLoader.assetLoaded(preloadAsset, callback);
                     resolve();
                     AssetLoader.loadPercentage.set(preloadAsset, 1.0);
-
-                }, function () {
+                }).catch((err) => {
+                    console.log(err)
                     AssetLoader.assetNotLoaded(preloadAsset, callback);
                     resolve();
-                });
-            }
-            request.onprogress = function (ev) {
-                BKE.loadstatus = "Loading sounds...";
-                AssetLoader.loadPercentage.set(preloadAsset, ev.loaded / ev.total);
-            }
-            request.onerror = function () {
+                })
+
+
+            }).catch((err) => {
+                console.log(err)
                 AssetLoader.assetNotLoaded(preloadAsset, callback);
                 resolve();
-            }
-            request.send();
+            });
         });
     }
 
@@ -166,34 +174,28 @@ export default class AssetLoader {
 
     public static loadText(preloadAsset: PreloadAsset, callback: VoidFunction): Promise<void> {
         return new Promise<void>((resolve) => {
-            AssetLoader.loadPercentage.set(preloadAsset, 0);
-            let request = new XMLHttpRequest();
-            let path = preloadAsset.path;
-            request.open('GET', path, true);
-            //webaudio paramaters
-            request.responseType = 'text';
-            request.onload = function () {
-                AssetLoader.assets.set(preloadAsset, request.response as string);
+            BKE.loadstatus = "Loading data...";
+            AssetLoader.loadPercentage.set(preloadAsset, 0.0);
+            const path = preloadAsset.path;
+            console.log("ASSETLOADER: Loading " + preloadAsset.path)
+
+
+            Platform.getCurrent().loadPathAsText(path).then((text) => {
+                AssetLoader.assets.set(preloadAsset, text);
                 AssetLoader.assetLoaded(preloadAsset, callback);
                 resolve();
                 AssetLoader.loadPercentage.set(preloadAsset, 1.0);
-            }
-            request.onprogress = function (ev) {
-                BKE.loadstatus = "Loading data...";
-                AssetLoader.loadPercentage.set(preloadAsset, ev.loaded / ev.total);
-            }
-            request.onerror = function () {
+            }).catch(() => {
                 AssetLoader.assetNotLoaded(preloadAsset, callback);
                 resolve();
-            }
-            request.send();
+            });
         });
     }
 
 
 
     private static assetNotLoaded(asset: PreloadAsset, callback: () => void) {
-        console.warn("Asset not loaded!")
+        console.warn("ASSETLOADER: Asset " + asset.path + " not loaded!")
         console.log(asset);
         AssetLoader.assetLoaded(asset, callback);
     }
@@ -201,6 +203,7 @@ export default class AssetLoader {
     private static assetLoaded(asset: PreloadAsset, callback: () => void) {
         AssetLoader.cacheQueue.splice(AssetLoader.cacheQueue.indexOf(asset), 1);
         AssetLoader.totalLoading = AssetLoader.cacheQueue.length;
+        console.log("ASSETLOADER: Loaded " + asset.path)
         if (AssetLoader.totalLoading === 0) {
             // we have loaded everything
             callback();
@@ -227,25 +230,6 @@ export default class AssetLoader {
         // }
     }
 
-    private static createSoundObject(buffer: AudioBuffer, asset: PreloadAsset): Sound {
-        let sound: Sound;
-
-        if (asset.soundMode === SoundMode.PANNER) {
-            sound = new PannerSound(buffer);
-        }
-        else if (asset.soundMode === SoundMode.STEREO_PANNER) {
-            sound = new StereoPannerSound(buffer);
-        }
-        else if (asset.soundMode === SoundMode.MUSIC) {
-            sound = new MusicSound(buffer);
-        }
-        else {
-            sound = new Sound(buffer)
-        }
-
-        sound.create();
-        return sound;
-    }
 
     static exists(asset: PreloadAsset) {
         return AssetLoader.assets.has(asset);
@@ -255,20 +239,20 @@ export default class AssetLoader {
         return (AssetLoader.assets.get(asset) as Graphic);
     }
 
-    static getSound(asset: PreloadAsset): Sound {
-        return (AssetLoader.assets.get(asset) as Sound);
+    static getSound(asset: PreloadAsset): ISound {
+        return (AssetLoader.assets.get(asset) as ISound);
     }
 
-    static getPannerSound(asset: PreloadAsset): PannerSound {
-        return (AssetLoader.assets.get(asset) as PannerSound);
+    static getPannerSound(asset: PreloadAsset): IPannerSound {
+        return (AssetLoader.assets.get(asset) as IPannerSound);
     }
 
-    static getStereoPannerSound(asset: PreloadAsset): StereoPannerSound {
-        return (AssetLoader.assets.get(asset) as StereoPannerSound);
+    static getStereoPannerSound(asset: PreloadAsset): IStereoPannerSound {
+        return (AssetLoader.assets.get(asset) as IStereoPannerSound);
     }
 
-    static getMusicSound(asset: PreloadAsset): MusicSound {
-        return (AssetLoader.assets.get(asset) as MusicSound);
+    static getMusicSound(asset: PreloadAsset): IMusicSound {
+        return (AssetLoader.assets.get(asset) as IMusicSound);
     }
 
     static getText(asset: PreloadAsset): string {

@@ -77,6 +77,7 @@ export default class WebGLRenderer implements IRenderer {
         });
     }
 
+
     getName(): string {
         return this.mode === "webgl" ? "WebGL (OpenGL ES 2.0)" : "WebGL 2.1 (OpenGL ES 3.0)";
     }
@@ -373,7 +374,23 @@ export default class WebGLRenderer implements IRenderer {
         }
         return { x: offsetX, y: offsetY };
     }
+    getDocumentSize(): Vector2 {
+        let width: number = document.body.clientWidth;
+        let height: number = document.body.clientHeight;
 
+        // safari web app
+        if (Platform.getCurrent().getPlatformDetails().includes("iospwa")) {
+            // safari doesnt update screen dimensions when rotated because fuck you 
+            width = document.body.clientWidth > document.body.clientHeight ? screen.height : screen.width;
+            height = document.body.clientWidth > document.body.clientHeight ? screen.width : screen.height;
+        }
+
+        return { x: width, y: height }
+    }
+
+    getDevicePixelRatio(): number {
+        return window.devicePixelRatio;
+    }
 }
 
 

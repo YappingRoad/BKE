@@ -1,15 +1,14 @@
-import MathUtil from "../utilities/MathUtil";
-import { Sprite } from "../Sprite";
-import Sound from "./Sound";
-import Dimensions from "../math/Dimensions";
-import Vector2 from "../math/Vector2";
+import WebSound from "./WebSound";
+import Dimensions from "../../../math/Dimensions";
+import Vector2 from "../../../math/Vector2";
+import { IPannerSound } from "../../../audio/IPannerSound";
 
 /* Sound object with volume controls and XYZ panning */
-export default class PannerSound extends Sound {
+export default class WebPannerSound extends WebSound implements IPannerSound {
     protected pannerNode: PannerNode;
     constructor(buffer: AudioBuffer) {
         super(buffer);
-        this.pannerNode = Sound.context.createPanner();
+        this.pannerNode = WebSound.context.createPanner();
     }
 
     override initializeNodes(): void {
@@ -26,7 +25,7 @@ export default class PannerSound extends Sound {
     override connectNodes() {
         this.source.connect(this.pannerNode);
         this.pannerNode.connect(super.getRootNode());
-        super.getRootNode().connect(Sound.context.destination);
+        super.getRootNode().connect(WebSound.context.destination);
     }
 
     override getRootNode(): AudioNode {
@@ -76,7 +75,7 @@ export default class PannerSound extends Sound {
     }
 
     public updatePanFromSprite(sprite: Vector2) {
-        const UIRect = Dimensions.UIRect()
+        // const UIRect = Dimensions.UIRect()
         // this.pannerNode.refDistance = (UIRect.width * 0.1 );
 
         this.panX = sprite.x;

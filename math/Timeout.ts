@@ -2,19 +2,19 @@ import Destroyable from "../interfaces/Destroyable";
 import MathUtil from "../utilities/MathUtil";
 
 export default class Timeout implements Destroyable {
-    id: string;
+    id: number;
     callback: VoidFunction;
-    _tick: number;
+    _tick: any;
     constructor(callback: VoidFunction, ms: number = 5000) {
-        this.id = window.btoa(`${MathUtil.getRandomID()}`);
+        this.id = MathUtil.getRandomID()
         this.callback = callback;
-        this._tick = window.setTimeout(() => {
+        this._tick = setTimeout(() => {
             this.callback();
         }, ms);
     }
 
 
     destroy() {
-        window.clearTimeout(this._tick)
+        clearTimeout(this._tick)
     }
 }

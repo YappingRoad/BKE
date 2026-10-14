@@ -1,9 +1,11 @@
-import Callback from "../Callback";
-import Updatable from "../interfaces/Updatable";
-import Sound from "./Sound";
-import { SoundChannel } from "./SoundChannel";
+import Callback from "../../../Callback";
+import Updatable from "../../../interfaces/Updatable";
+import { IMusicSound } from "../../../audio/IMusicSound";
+import RaylibSound from "./RaylibSound";
+import { AudioContext, PannerNode, AudioBuffer, GainNode } from 'node-web-audio-api';
+import { SoundChannel } from "../../../audio/SoundChannel";
 
-export default class MusicSound extends Sound implements Updatable {
+export default class RaylibMusicSound extends RaylibSound implements IMusicSound {
     constructor(buffer: AudioBuffer) {
         super(buffer);
     }
@@ -20,7 +22,7 @@ export default class MusicSound extends Sound implements Updatable {
     }
 
 
-    setMusicMeta(bpm: number) {
+    setMusicMeta(bpm: number):void {
         this.bpm = bpm;
 
         this.updateBPM();

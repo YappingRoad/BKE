@@ -14,6 +14,12 @@ export default class DebugRenderer implements IRenderer {
     constructor(renderer: IRenderer) {
         this.renderer = renderer;
     }
+    getDocumentSize(): Vector2 {
+        return this.renderer.getDocumentSize()
+    }
+    getDevicePixelRatio(): number {
+        return this.renderer.getDevicePixelRatio();
+    }
 
     createGraphic(blob: Blob): Graphic {
         return this.renderer.createGraphic(blob)

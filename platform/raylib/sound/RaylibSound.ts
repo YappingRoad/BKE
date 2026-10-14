@@ -1,13 +1,13 @@
-
-import Destroyable from "../interfaces/Destroyable";
-import { SoundChannel } from "./SoundChannel";
+import { AudioContext, AudioBufferSourceNode, AudioBuffer, GainNode } from 'node-web-audio-api';
+import { ISound } from "../../../audio/ISound";
+import { SoundChannel } from "../../../audio/SoundChannel";
+import SoundMixer from "../../../audio/SoundMixer";
+import Vector2 from '../../../math/Vector2';
 /* Simple sound object with volume controls */
 
 // TODO: Make this and others a interface, SOUND REWRITE!
-export default class Sound implements Destroyable {
+export default class RaylibSound implements ISound  {
     static context: AudioContext = new AudioContext();
-    static sounds: Array<Sound> = [];
-    public static CHANNELS: Map<SoundChannel, number> = new Map();
 
     public source: AudioBufferSourceNode;
 
@@ -17,15 +17,17 @@ export default class Sound implements Destroyable {
     constructor(buffer: AudioBuffer) {
 
         this.buffer = buffer;
-        this.source = Sound.context.createBufferSource();
+        this.source = RaylibSound.context.createBufferSource();
         this.source.buffer = buffer;
 
 
         // For volume
-        this.gainNode = Sound.context.createGain();
-        Sound.sounds.push(this);
+        this.gainNode = RaylibSound.context.createGain();
+        SoundMixer.SOUNDS.push(this);
     }
+    public updatePanFromSprite(sprite: Vector2) {
 
+    }
 
     public getChannel(): SoundChannel {
         return SoundChannel.SOUND;
@@ -37,8 +39,8 @@ export default class Sound implements Destroyable {
         this.reinitializeSource();
     }
 
-    clone() {
-        let sound = new Sound(this.buffer);
+    clone():ISound {
+        let sound = new RaylibSound(this.buffer);
         sound.create();
         return sound;
     }
@@ -48,7 +50,7 @@ export default class Sound implements Destroyable {
 
     connectNodes() {
         this.source.connect(this.gainNode);
-        this.gainNode.connect(Sound.context.destination);
+        this.gainNode.connect(RaylibSound.context.destination);
     }
 
     getRootNode(): AudioNode {
@@ -58,7 +60,7 @@ export default class Sound implements Destroyable {
 
     reinitializeSource() {
         this.source.disconnect(this.getRootNode());
-        let newSource = Sound.context.createBufferSource();
+        let newSource = RaylibSound.context.createBufferSource();
         newSource.buffer = this.source.buffer;
         newSource.loop = this.source.loop;
         newSource.playbackRate.value = this.source.playbackRate.value;
@@ -76,12 +78,12 @@ export default class Sound implements Destroyable {
     set volume(value: number) {
         this.vol = value;
 
-        let v = Sound.CHANNELS.get(this.getChannel());
+        let v = SoundMixer.CHANNELS.get(this.getChannel());
         if (v == undefined) {
             v = 1.0;
         }
 
-        this.gainNode.gain.setValueAtTime(this.vol * (this.ignoreChannel ? 1 : v), Sound.context.currentTime)
+        this.gainNode.gain.setValueAtTime(this.vol * (this.ignoreChannel ? 1 : v), RaylibSound.context.currentTime)
     }
 
 
@@ -107,14 +109,14 @@ export default class Sound implements Destroyable {
     }
 
     set detune(value: number) {
-        this.source.detune.setValueAtTime(value, Sound.context.currentTime);
+        this.source.detune.setValueAtTime(value, RaylibSound.context.currentTime);
     }
 
     protected startTimestamp: number = -1;
 
     get currentTime(): number {
         if (this.source.buffer != null)
-            return ((Sound.context.currentTime) - (this.startTimestamp)) % (this.source.buffer.duration / this.speed);
+            return ((RaylibSound.context.currentTime) - (this.startTimestamp)) % (this.source.buffer.duration / this.speed);
         else {
             return -1;
         }
@@ -134,7 +136,7 @@ export default class Sound implements Destroyable {
 
         this.reinitializeSource();
 
-        this.startTimestamp = Sound.context.currentTime;
+        this.startTimestamp = RaylibSound.context.currentTime;
         this.source.start(0);
         this.source.addEventListener("ended", (ev) => {
             this.startTimestamp = -1;
@@ -151,9 +153,9 @@ export default class Sound implements Destroyable {
 
     public destroy() {
         this.stop();
-        let i = Sound.sounds.indexOf(this);
+        let i = SoundMixer.SOUNDS.indexOf(this);
         if (i != -1) {
-            Sound.sounds.splice(i);
+            SoundMixer.SOUNDS.splice(i);
         }
     }
 }

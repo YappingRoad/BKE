@@ -32,7 +32,7 @@ export default class DOMRenderer implements IRenderer {
         this.canvas.style.touchAction = "manipulation";
         this.canvas.autocorrect = false;
         this.canvas.addEventListener("contextmenu", (ev) => {
-             (Platform.getCurrent() as Web).updateMouse(ev);
+            (Platform.getCurrent() as Web).updateMouse(ev);
             ev.preventDefault();
         });
         this.measureElem = document.createElement("div");
@@ -41,7 +41,7 @@ export default class DOMRenderer implements IRenderer {
         this.measureElem.style.userSelect = "none";
         document.body.appendChild(this.measureElem);
     }
-    
+
     setPixelRaw(vector: Vector2, color: Color): void {
         this.drawRectangleRaw({ x: vector.x, y: vector.x, width: 1, height: 1 }, color)
     }
@@ -435,6 +435,24 @@ export default class DOMRenderer implements IRenderer {
             offsetY /= 2;
         }
         return { x: offsetX, y: offsetY };
+    }
+
+    getDocumentSize(): Vector2 {
+        let width: number = document.body.clientWidth;
+        let height: number = document.body.clientHeight;
+
+        // safari web app
+        if (Platform.getCurrent().getPlatformDetails().includes("iospwa")) {
+            // safari doesnt update screen dimensions when rotated because fuck you 
+            width = document.body.clientWidth > document.body.clientHeight ? screen.height : screen.width;
+            height = document.body.clientWidth > document.body.clientHeight ? screen.width : screen.height;
+        }
+
+        return { x: width, y: height }
+    }
+
+    getDevicePixelRatio(): number {
+        return window.devicePixelRatio;
     }
 
 }

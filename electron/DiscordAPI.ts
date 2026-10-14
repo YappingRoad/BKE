@@ -1,11 +1,13 @@
+import Platform from "../platform/Platform";
+
 export default class DiscordAPI {
     public static isAvailable(): boolean {
-        return "electronAPI" in window;
+        return Platform.getCurrent().getPlatformDetails().includes("electron");
         // return false;
     }
 
     public static setActivity(activity:SetActivity) {
-        (window as any).electronAPI.discord_setActivity(JSON.stringify(activity));
+        (globalThis as any).window.electronAPI.discord_setActivity(JSON.stringify(activity));
     }
 }
 

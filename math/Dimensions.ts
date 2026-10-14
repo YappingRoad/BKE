@@ -1,4 +1,3 @@
-import Android from "../android/Android";
 import Platform from "../platform/Platform";
 import Renderer from "../renderers/Renderer";
 
@@ -21,15 +20,9 @@ export default class Dimensions {
     }
 
     public static getWidth(): number {
-        let width: number = document.body.clientWidth;
-        let height: number = document.body.clientHeight;
-
-        // safari web app
-        if (Platform.getCurrent().getPlatformDetails().includes("iospwa")) {
-            // safari doesnt update screen dimensions when rotated because fuck you 
-            width = document.body.clientWidth > document.body.clientHeight ? screen.height : screen.width;
-            height = document.body.clientWidth > document.body.clientHeight ? screen.width : screen.height;
-        }
+        const docSize = Renderer.CURRENT.getDocumentSize()
+        const width = docSize.x;
+        const height = docSize.y;
 
         const screenRatio: number = width / height;
         const nearestAllowedRatio = MathUtil.getClosestNumberMap(Dimensions.RATIOS.keys(), screenRatio);
@@ -52,16 +45,9 @@ export default class Dimensions {
 
 
     public static getHeight(): number {
-
-        let width: number = document.body.clientWidth;
-        let height: number = document.body.clientHeight;
-
-        // safari web app
-        if (Platform.getCurrent().getPlatformDetails().includes("iospwa")) {
-            // safari doesnt update screen dimensions when rotated because fuck you 
-            width = document.body.clientWidth > document.body.clientHeight ? screen.height : screen.width;
-            height = document.body.clientWidth > document.body.clientHeight ? screen.width : screen.height;
-        }
+        const docSize = Renderer.CURRENT.getDocumentSize()
+        const width = docSize.x;
+        const height = docSize.y;
 
         const screenRatio: number = width / height;
         const nearestAllowedRatio = MathUtil.getClosestNumberMap(Dimensions.RATIOS.keys(), screenRatio);
@@ -83,16 +69,9 @@ export default class Dimensions {
 
 
     public static getVector(): Vector2 {
-
-        let width: number = document.body.clientWidth;
-        let height: number = document.body.clientHeight;
-
-        // safari web app
-        if (Platform.getCurrent().getPlatformDetails().includes("iospwa")) {
-            // safari doesnt update screen dimensions when rotated because fuck you 
-            width = document.body.clientWidth > document.body.clientHeight ? screen.height : screen.width;
-            height = document.body.clientWidth > document.body.clientHeight ? screen.width : screen.height;
-        }
+        const docSize = Renderer.CURRENT.getDocumentSize()
+        const width = docSize.x;
+        const height = docSize.y;
 
         const screenRatio: number = width / height;
         const nearestAllowedRatio = MathUtil.getClosestNumberMap(Dimensions.RATIOS.keys(), screenRatio);
@@ -153,11 +132,24 @@ export default class Dimensions {
     }
 
     private static getNotchOffsetLeft() {
-        return Number.parseInt(getComputedStyle(document.documentElement).getPropertyValue("--sal").replace("px", "")) * window.devicePixelRatio;
+
+        if ("window" in globalThis) {
+            return Number.parseInt(getComputedStyle(document.documentElement).getPropertyValue("--sal").replace("px", "")) * window.devicePixelRatio;
+
+        } else {
+            return 0;
+        }
+
     }
 
     private static getNotchOffsetRight() {
-        return Number.parseInt(getComputedStyle(document.documentElement).getPropertyValue("--sar").replace("px", ""));
+        if ("window" in globalThis) {
+            return Number.parseInt(getComputedStyle(document.documentElement).getPropertyValue("--sar").replace("px", ""));
+        }
+        else {
+            return 0;
+        }
+
     }
 
     public static getUIRight(): number {
@@ -188,7 +180,7 @@ export default class Dimensions {
 
     private static UIScale: number | undefined = undefined;
     public static getUIScale(): number {
-        if (Dimensions.UIScale === undefined) {                                      // older ios fix
+        if (Dimensions.UIScale === undefined) {  // older ios fix
             Dimensions.UIScale =
                 (Platform.getCurrent().getPlatformDetails().includes("iospwa") || Platform.getCurrent().getPlatformDetails().includes("android"))
                     ? Math.max(1.5, window.devicePixelRatio / 2)

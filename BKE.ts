@@ -1,7 +1,5 @@
 // BK Engine
 
-import Sound from "./audio/Sound";
-import Electron from "./electron/Electron";
 import { Key } from "./input/devices/Keyboard";
 import Input from "./input/Input";
 import Color from "./math/Color";
@@ -17,6 +15,8 @@ import Plugin from "./Plugin";
 import Callback from "./Callback";
 import { Sprite } from "./Sprite";
 import Platform from "./platform/Platform";
+import SoundMixer from "./audio/SoundMixer";
+import BouncyBill from "../game/objects/BouncyBill";
 
 
 export default class BKE {
@@ -25,26 +25,28 @@ export default class BKE {
         StorageHandler.init();
         Input.init();
 
-        if (Electron.isAvailable()) {
+        if (Platform.getCurrent().getPlatformDetails().includes("electron")) {
             // BKE.DEBUG = true;
             Input.KEYBOARD.onKeyPoll.add(() => {
                 let altDown = Input.KEYBOARD.isKeyDown(Key.AltLeft) || Input.KEYBOARD.isKeyDown(Key.AltRight);
                 if (Input.KEYBOARD.justReleased(Key.F11) || (altDown && Input.KEYBOARD.justPressed(Key.Enter))) {
-                    Electron.toggleFullscreen();
+                    // Electron.toggleFullscreen();
+                    // todo: make fullscreen something possible via platform
+
                 }
             });
         }
         Dimensions.init();
 
         Renderer.init();
-
+        BKE.loadingSprite = new BouncyBill()
 
     }
 
     public static PAUSE: boolean = false;
 
     public static get FOCUSED(): boolean {
-        return document.hasFocus();
+        return Platform.getCurrent().isFocused();
     };
 
     public static STATE: State;
@@ -87,7 +89,8 @@ export default class BKE {
         else {
             Renderer.CURRENT.clearCanvas();
             // do 1 whole second on electron because usually drives are fast unless you have a hdd @mista
-            BKE.LOADING_SCREEN_DRAW = Time.getMS() - AssetLoader.preloadStartTime > (Electron.isAvailable() ? 1000 : 200)
+            // BKE.LOADING_SCREEN_DRAW = Time.getMS() - AssetLoader.preloadStartTime > (Platform.getCurrent().getPlatformDetails().includes("electron") ? 1000 : 200)
+            BKE.LOADING_SCREEN_DRAW = false;
             if (BKE.LOADING_SCREEN_DRAW) {
                 BKE.drawLoading();
             }
@@ -123,10 +126,11 @@ export default class BKE {
         BKE._frameCounter++;
         BKE.totalSeconds = newSeconds;
 
-        if (window.scrollY > 0) {
-            window.scrollTo(0, 0);
+        if ("window" in globalThis) {
+            if (window.scrollY > 0) {
+                window.scrollTo(0, 0);
+            }
         }
-
         if (BKE.FOCUSED && !BKE.PAUSE) {
             for (const plugin of Plugin.plugins) {
                 plugin.update(BKE.elapsed);
@@ -145,7 +149,7 @@ export default class BKE {
     }
 
     static getTimestep(): number {
-        return ("performance" in window) ? window.performance.now() : document.timeline.currentTime as number;
+        return Time.getMS();
     }
 
     static newDrawFrame() {
@@ -210,7 +214,7 @@ export default class BKE {
         if (BKE.STATE != null && BKE.STATE._preloaded) {
             BKE.onStateSwitch.dispatch();
             BKE.STATE.destroy();
-            for (const sound of Sound.sounds) {
+            for (const sound of SoundMixer.SOUNDS) {
                 sound.destroy();
             }
         }

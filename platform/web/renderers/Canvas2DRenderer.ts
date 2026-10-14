@@ -546,7 +546,7 @@ export default class Canvas2DRenderer implements IRenderer {
     }
 
     public getSafeAreaDimensions(): Vector2 {
-        const ratio: number = Math.min((Dimensions.getWidth() * devicePixelRatio) / Dimensions.GAME_WIDTH, (Dimensions.getHeight() * devicePixelRatio) / Dimensions.GAME_HEIGHT);
+        const ratio: number = Math.min((Dimensions.getWidth() * this.getDevicePixelRatio()) / Dimensions.GAME_WIDTH, (Dimensions.getHeight() * this.getDevicePixelRatio()) / Dimensions.GAME_HEIGHT);
         const scaledWidth = Math.trunc(Dimensions.GAME_WIDTH * ratio);
         const scaledHeight = Math.trunc(Dimensions.GAME_HEIGHT * ratio);
         return { x: scaledWidth, y: scaledHeight }
@@ -554,16 +554,33 @@ export default class Canvas2DRenderer implements IRenderer {
 
     public getSafeAreaOffset(): Vector2 {
         const safeAreaDimensions = this.getSafeAreaDimensions()
-        let offsetX = (Dimensions.getWidth() * devicePixelRatio) - safeAreaDimensions.x;
+        let offsetX = (Dimensions.getWidth() * this.getDevicePixelRatio()) - safeAreaDimensions.x;
         if (offsetX > 0) {
             offsetX /= 2;
         }
 
-        let offsetY = (Dimensions.getHeight() * devicePixelRatio) - safeAreaDimensions.y;
+        let offsetY = (Dimensions.getHeight() * this.getDevicePixelRatio()) - safeAreaDimensions.y;
         if (offsetY > 0) {
             offsetY /= 2;
         }
         return { x: offsetX, y: offsetY };
     }
 
+    getDocumentSize(): Vector2 {
+        let width: number = document.body.clientWidth;
+        let height: number = document.body.clientHeight;
+
+        // safari web app
+        if (Platform.getCurrent().getPlatformDetails().includes("iospwa")) {
+            // safari doesnt update screen dimensions when rotated because fuck you 
+            width = document.body.clientWidth > document.body.clientHeight ? screen.height : screen.width;
+            height = document.body.clientWidth > document.body.clientHeight ? screen.width : screen.height;
+        }
+
+        return { x: width, y: height }
+    }
+
+    getDevicePixelRatio(): number {
+        return window.devicePixelRatio;
+    }
 }
