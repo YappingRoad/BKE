@@ -31,13 +31,14 @@ export class Structure implements IStructure {
 
 
     private static createObject(value: any): StructureObjects | undefined {
+
+
         if (Structure.isComponent(value) || value instanceof Structure) {
             return value;
         }
         if (Array.isArray(value)) {
             return ArrayComponent.of(value);
         }
-
 
         switch (typeof value) {
             case "function":

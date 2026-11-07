@@ -29,7 +29,7 @@ export default class Canvas2DRenderer implements IRenderer {
         this.holder.id = "canvasholder";
         document.body.appendChild(this.holder)
 
-
+        
         this.canvas = document.createElement("canvas");
         this.canvas.id = "gamecanvas";
         this.holder.appendChild(this.canvas);
@@ -57,7 +57,8 @@ export default class Canvas2DRenderer implements IRenderer {
             this.renderDeviceName = "Loading...";
             ((navigator.gpu as any).requestAdapter as () => Promise<any>)().then((adapter) => {
                 let adapterInfo = adapter.info;
-                this.renderDeviceName = (adapterInfo.vendor as string).toUpperCase();
+                
+                this.renderDeviceName = `${(adapterInfo.vendor as string).toUpperCase()} ${(adapterInfo.architecture as string)}`;
             });
         }
         return this.renderDeviceName;

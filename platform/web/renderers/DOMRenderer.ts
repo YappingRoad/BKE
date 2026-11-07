@@ -52,17 +52,18 @@ export default class DOMRenderer implements IRenderer {
 
     renderDeviceName: string = "Unknown (likely software)";
 
+
     getRenderDeviceName(): string {
         if ("gpu" in navigator && (this.renderDeviceName === "Unknown (likely software)")) {
             this.renderDeviceName = "Loading...";
             ((navigator.gpu as any).requestAdapter as () => Promise<any>)().then((adapter) => {
-                const adapterInfo = adapter.info;
-                this.renderDeviceName = (adapterInfo.vendor as string).toUpperCase();
+                let adapterInfo = adapter.info;
+                
+                this.renderDeviceName = `${(adapterInfo.vendor as string).toUpperCase()} ${(adapterInfo.architecture as string)}`;
             });
         }
         return this.renderDeviceName;
     }
-
 
     public supportsPointerLock(): boolean {
         return false;

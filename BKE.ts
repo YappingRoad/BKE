@@ -17,6 +17,7 @@ import { Sprite } from "./Sprite";
 import Platform from "./platform/Platform";
 import SoundMixer from "./audio/SoundMixer";
 import BouncyBill from "../game/objects/BouncyBill";
+import Graphic from "./graphic/Graphic";
 
 
 export default class BKE {
@@ -217,6 +218,17 @@ export default class BKE {
             for (const sound of SoundMixer.SOUNDS) {
                 sound.destroy();
             }
+
+            // for (const object of AssetLoader.assets) {
+            //     const path = object[0];
+
+            //     const asset = object[1];
+            //     if (object instanceof Graphic) {
+            //         if (!path.keepInMemory) {
+            //             object.destroy()
+            //         }
+            //     }
+            // }
         }
 
         Physics.resetToDefault();

@@ -16,6 +16,7 @@ import BKE from "../../BKE";
 import RaylibSound from "./sound/RaylibSound";
 import fs from "node:fs";
 export class RaylibRenderer implements IRenderer {
+
     constructor() {
         console.log("-- RENDERER -- : INITALIZING")
 
@@ -24,14 +25,16 @@ export class RaylibRenderer implements IRenderer {
         r.SetWindowState(r.FLAG_WINDOW_RESIZABLE | r.FLAG_WINDOW_HIGHDPI)
 
         r.InitWindow(screenWidth, screenHeight, "Bill Kolumbert")
-        r.SetTargetFPS(9999)
-
-
-
+        // r.SetTargetFPS(9999)
+        r.SetExitKey(-1)
+        // r.HideCursor()
 
     }
 
+    private dimensions: Vector2 = Vector2.zero()
 
+
+    private screenSize: Vector2 = Vector2.zero();
     public newFrame() {
         // if (BKE.LOADING_SCREEN_DRAW) {
         //     const rafCallback = (Platform.getCurrent() as Raylib).rafCallback;
@@ -44,8 +47,19 @@ export class RaylibRenderer implements IRenderer {
         //     }
         //     return;
         // }
+
+        //https://devlair.cz/posts/rlviewport/
+
+        Dimensions.recalculate()
+        this.screenSize = { x: r.GetScreenWidth(), y: r.GetScreenHeight() };
+        const ratio: number = Math.min(Dimensions.getWidth() / Dimensions.GAME_WIDTH, Dimensions.getHeight() / Dimensions.GAME_HEIGHT);
+
+        this.dimensions.x = Math.ceil(Dimensions.GAME_WIDTH * ratio);
+        this.dimensions.y = Math.ceil(Dimensions.GAME_HEIGHT * ratio);
+
         r.BeginDrawing()
-        // r.rlViewport(0,0,Dimensions.getWidth(),Dimensions.getHeight())
+        r.BeginMode2D({ offset: { x: (r.GetScreenWidth() - this.dimensions.x) / 2, y: (r.GetScreenHeight() - this.dimensions.y) / 2 }, target: { x: 0, y: 0 }, rotation: 0, zoom: 1.0 })
+
         r.ClearBackground(r.BLACK)
         const rafCallback = (Platform.getCurrent() as Raylib).rafCallback;
         if (rafCallback !== null) {
@@ -56,8 +70,12 @@ export class RaylibRenderer implements IRenderer {
         }
 
         // r.DrawText("FPS:" + (1 / r.GetFrameTime()).toFixed(2), 120, 200, 20, r.LIGHTGRAY)
+        r.EndMode2D()
 
         r.EndDrawing()
+        // r.rlDrawRenderBatchActive()
+        // r.SwapScreenBuffer()
+        // r.PollInputEvents()
 
         if (r.WindowShouldClose()) {
             r.CloseWindow()
@@ -198,7 +216,7 @@ export class RaylibRenderer implements IRenderer {
             font = r.GetFontDefault()
         }
 
-        r.DrawTextEx(font, text, { x, y }, data.size + 12, 0, RaylibRenderer.colorToRL(data.color))
+        r.DrawTextEx(font, text, { x, y }, data.size, 0, RaylibRenderer.colorToRL(data.color))
 
     }
 
@@ -253,7 +271,11 @@ export class RaylibRenderer implements IRenderer {
         this.drawRoundedRectangleRaw(rect, radius, color);
     }
     drawRoundedRectangleRaw(rect: Rectangle, radius: number, color: Color): void {
-        r.DrawRectangleRounded(rect, radius, 4, { r: color.red, g: color.green, b: color.blue, a: color.alpha })
+        // Inverse of the formula raylib uses
+        // https://github.com/raysan5/raylib/blob/e1ffd2902683c181c8ab1f262450b0ad34782a80/src/rshapes.c#L867
+        const roundness = (rect.width > rect.height) ? 2 * (radius / rect.height) : 2 * (radius / rect.width);
+
+        r.DrawRectangleRounded(rect, roundness, 0, { r: color.red, g: color.green, b: color.blue, a: color.alpha })
     }
     drawCircle(x: number, y: number, radius: number, color: Color): void {
         const dimensions = this.getCanvasDimensions();
@@ -269,11 +291,11 @@ export class RaylibRenderer implements IRenderer {
     }
 
     getCanvasDimensions(): Vector2 {
-        return { x: Dimensions.getWidth(), y: Dimensions.getHeight() }
+        return this.dimensions;
     }
 
     getDocumentSize(): Vector2 {
-        return { x: r.GetRenderWidth(), y: r.GetRenderHeight() }
+        return this.screenSize;
 
 
     }

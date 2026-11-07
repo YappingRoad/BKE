@@ -1,6 +1,8 @@
 import Destroyable from "../interfaces/Destroyable";
+import { PreloadAsset } from "../interfaces/PreloadRequestable";
 import Color from "../math/Color";
 import Vector2 from "../math/Vector2";
+import AssetLoader from "../registries/AssetLoader";
 import MathUtil from "../utilities/MathUtil";
 export type ColorPalette = Array<Color>;
 export default class Graphic implements Destroyable {
@@ -27,8 +29,14 @@ export default class Graphic implements Destroyable {
     }
 
     destroy(): void {
-    }
+        for (let [key, value] of AssetLoader.assets.entries()) {
+            if (value === this) {
+                AssetLoader.remove(JSON.parse(key) as PreloadAsset)
+                break;
 
+            }
+        }
+    }
     getColorPalette(): ColorPalette {
         return []
     }

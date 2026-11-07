@@ -9,6 +9,7 @@ import Renderer from "./renderers/Renderer";
 import Dimensions from "./math/Dimensions";
 import Color from "./math/Color";
 import Timeout from "./math/Timeout";
+import Graphic from "./graphic/Graphic";
 
 export default class State implements Drawable, Updatable, Destroyable {
     members: Array<GameObject>;
@@ -54,8 +55,8 @@ export default class State implements Drawable, Updatable, Destroyable {
             this.asyncPreload().then(() => {
 
 
-                    this._preloaded = true;
-                    this.postPreload();
+                this._preloaded = true;
+                this.postPreload();
 
 
             })
@@ -122,6 +123,19 @@ export default class State implements Drawable, Updatable, Destroyable {
                 member.destroy();
             }
         }
+        // for (const path of AssetLoader.stateQueue) {
+
+        //     const asset = AssetLoader.getObject(path);
+        //     if (asset instanceof Graphic) {
+        //         if (!path.keepInMemory) {
+        //             asset.destroy()
+
+        //             AssetLoader.remove(path)
+        //         }
+        //     }
+        // }
+        AssetLoader.stateQueue = [];
+
         this.members = [];
     }
 

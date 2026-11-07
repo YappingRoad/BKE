@@ -24,9 +24,7 @@ export default class RaylibGraphic extends Graphic {
 
         this.texture = r.LoadTextureFromImage(this.image);
 
-        const data = ((await sharp(this.buffer).ensureAlpha().raw({ depth: "uchar" }).toUint8Array()));
-        console.log(data)
-
+        let data = ((await sharp(this.buffer).ensureAlpha().raw({ depth: "uchar" }).toUint8Array()));
         // Holy fuckery
         // data.reverse() converts to abgr to rgba (its reversed, probably different endian type)
         // we create a Uint32array because 32bit is 4bytes / 8bits * 4
@@ -49,6 +47,8 @@ export default class RaylibGraphic extends Graphic {
         })
         this.pallete = colors;
 
+
+        console.log(sharp.cache(false))
     }
 
 
@@ -60,9 +60,12 @@ export default class RaylibGraphic extends Graphic {
         return this.texture.height;
     }
 
-    override  destroy(): void {
+    override destroy(): void {
+        this.buffer = new ArrayBuffer(0);
+        // r.MemFree()
         r.UnloadTexture(this.texture)
         r.UnloadImage(this.image)
+        super.destroy()
     }
 
     override getColorPalette(): ColorPalette {
@@ -102,9 +105,10 @@ export default class RaylibGraphic extends Graphic {
         r.UnloadTexture(this.texture)
         r.UnloadImage(this.image)
         this.image = r.LoadImageFromMemory(".png", newImage, newImage.byteLength);
-        console.log("Loaded Image")
 
         this.texture = r.LoadTextureFromImage(this.image);
+        console.log(sharp.cache(false))
+
     }
 
     private toHex(num: number): string {

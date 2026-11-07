@@ -51,16 +51,16 @@ export default class PhysicsState extends State {
 
 
 
-                if (a.keyframe.y + a.getPhysRect().height > Physics.DATA.FLOOR_Y) {
+                if (a.getPhysRect().y + a.getPhysRect().height > Physics.DATA.FLOOR_Y) {
                     a.collision({ type: CollideType.FLOOR, object: null, position: { x: 0, y: Physics.DATA.FLOOR_Y } });
                 }
-                else if (Physics.DATA.CEILING_Y >= a.keyframe.y) {
+                else if (Physics.DATA.CEILING_Y >= a.getPhysRect().y) {
                     a.collision({ type: CollideType.CEILING, object: null, position: { x: 0, y: Physics.DATA.CEILING_Y } });
                 }
 
-                if (Physics.DATA.LEFT_WALL_X >= a.keyframe.x) {
+                if (Physics.DATA.LEFT_WALL_X >= a.getPhysRect().x) {
                     a.collision({ type: CollideType.LEFT_WALL, object: null, position: { x: Physics.DATA.LEFT_WALL_X, y: 0 } });
-                } else if (a.keyframe.x + a.getPhysRect().width >= Physics.DATA.RIGHT_WALL_X) {
+                } else if (a.getPhysRect().x + a.getPhysRect().width >= Physics.DATA.RIGHT_WALL_X) {
                     a.collision({ type: CollideType.RIGHT_WALL, object: null, position: { x: Physics.DATA.RIGHT_WALL_X, y: 0 } });
                 }
 

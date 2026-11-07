@@ -16,13 +16,18 @@ export type AssetObject = Graphic | ISound | string;
 
 export default class AssetLoader {
     static cacheQueue: Array<PreloadAsset> = [];
-    static assets: Map<PreloadAsset, AssetObject> = new Map();
+    static stateQueue: Array<PreloadAsset> = [];
+    static assets: Map<string, AssetObject> = new Map();
     static loadPercentage: Map<PreloadAsset, number> = new Map();
 
     static addToQueue(assets: Array<PreloadAsset>) {
         for (const member of assets) {
-            if (!AssetLoader.cacheQueue.includes(member) && !AssetLoader.assets.has(member)) {
+            if (!AssetLoader.cacheQueue.includes(member) && !AssetLoader.assets.has(JSON.stringify(member))) {
                 AssetLoader.cacheQueue.push(member)
+            }
+
+            if (!AssetLoader.stateQueue.includes(member) && !AssetLoader.assets.has(JSON.stringify(member))) {
+                AssetLoader.stateQueue.push(member)
             }
         }
     }
@@ -50,6 +55,22 @@ export default class AssetLoader {
             return 3;
         }
         return 4;
+    }
+
+    static getObject(asset: PreloadAsset): AssetObject {
+        return AssetLoader.assets.get(JSON.stringify(asset)) as AssetObject;
+    }
+
+    static remove(asset: PreloadAsset) {
+
+        AssetLoader.assets.delete(JSON.stringify(asset))
+    }
+    static isGraphic(member: AssetObject): member is Graphic {
+        return (member as Graphic).getColorPalette !== undefined;
+    }
+
+    static isSound(member: AssetObject): member is ISound {
+        return (member as ISound).getChannel !== undefined;
     }
 
     static preload(callback: VoidFunction) {
@@ -93,7 +114,7 @@ export default class AssetLoader {
                 const promise = graphic.load();
                 promise.then(() => {
 
-                    AssetLoader.assets.set(preloadAsset, graphic);
+                    AssetLoader.assets.set(JSON.stringify(preloadAsset), graphic);
                     AssetLoader.assetLoaded(preloadAsset, callback);
                     AssetLoader.loadPercentage.set(preloadAsset, 1.0);
                     resolve();
@@ -145,7 +166,7 @@ export default class AssetLoader {
 
                 promise.then((sound) => {
                     sound.create();
-                    AssetLoader.assets.set(preloadAsset, sound);
+                    AssetLoader.assets.set(JSON.stringify(preloadAsset), sound);
                     AssetLoader.assetLoaded(preloadAsset, callback);
                     resolve();
                     AssetLoader.loadPercentage.set(preloadAsset, 1.0);
@@ -181,7 +202,7 @@ export default class AssetLoader {
 
 
             Platform.getCurrent().loadPathAsText(path).then((text) => {
-                AssetLoader.assets.set(preloadAsset, text);
+                AssetLoader.assets.set(JSON.stringify(preloadAsset), text);
                 AssetLoader.assetLoaded(preloadAsset, callback);
                 resolve();
                 AssetLoader.loadPercentage.set(preloadAsset, 1.0);
@@ -232,30 +253,33 @@ export default class AssetLoader {
 
 
     static exists(asset: PreloadAsset) {
-        return AssetLoader.assets.has(asset);
+        return AssetLoader.assets.has(JSON.stringify(asset));
     }
 
     static getGraphic(asset: PreloadAsset): Graphic {
-        return (AssetLoader.assets.get(asset) as Graphic);
+        return (AssetLoader.assets.get(JSON.stringify(asset)) as Graphic);
     }
 
     static getSound(asset: PreloadAsset): ISound {
-        return (AssetLoader.assets.get(asset) as ISound);
+        return (AssetLoader.assets.get(JSON.stringify(asset)) as ISound);
     }
 
+
+
+
     static getPannerSound(asset: PreloadAsset): IPannerSound {
-        return (AssetLoader.assets.get(asset) as IPannerSound);
+        return (AssetLoader.assets.get(JSON.stringify(asset)) as IPannerSound);
     }
 
     static getStereoPannerSound(asset: PreloadAsset): IStereoPannerSound {
-        return (AssetLoader.assets.get(asset) as IStereoPannerSound);
+        return (AssetLoader.assets.get(JSON.stringify(asset)) as IStereoPannerSound);
     }
 
     static getMusicSound(asset: PreloadAsset): IMusicSound {
-        return (AssetLoader.assets.get(asset) as IMusicSound);
+        return (AssetLoader.assets.get(JSON.stringify(asset)) as IMusicSound);
     }
 
     static getText(asset: PreloadAsset): string {
-        return (AssetLoader.assets.get(asset) as string);
+        return (AssetLoader.assets.get(JSON.stringify(asset)) as string);
     }
 }

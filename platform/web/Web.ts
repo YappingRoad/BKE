@@ -388,7 +388,12 @@ export default class Web extends Platform {
 
 
     override getMemoryUsed(): number {
-        return (window.performance as any).memory.totalJSHeapSize;
+        // if ("performance" in window) {
+        //     return (window.performance as any).memory.totalJSHeapSize;
+
+        // }
+
+        return 0;
     }
 
     override getPlatformDetails(): Array<string> {

@@ -199,6 +199,26 @@ export default class MathUtil {
         }
         return sum;
     }
+
+    //https://iiif.io/api/annex/notes/rotation/
+    public static sizeAfterRotation(oldSize: Vector2, angle: number): Vector2 {
+        let newSize = Vector2.zero();
+        let rotatedAngle = MathUtil.wrapAngle(angle) % 180;
+        // console.log(rotatedAngle)
+        if (rotatedAngle > 90) {
+            rotatedAngle = rotatedAngle - 90;
+
+
+        }
+        newSize.x = (oldSize.x * Math.cos(MathUtil.toRad(rotatedAngle))) + (oldSize.y * Math.sin(MathUtil.toRad(rotatedAngle)));
+        newSize.y = (oldSize.x * Math.sin(MathUtil.toRad(rotatedAngle))) + (oldSize.x * Math.cos(MathUtil.toRad(rotatedAngle)));
+        return newSize;
+
+
+    }
+
+
+
 }
 
 

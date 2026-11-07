@@ -15,7 +15,33 @@ export default class Dimensions {
         Dimensions.RATIOS = new Map();
         // upscaled to 1080p, 720p etc
         Dimensions.RATIOS.set((16 / 9), { x: 640, y: 360 });
+        // Safe area scales: 
 
+        // 800x600 / iPad with home button ratio
+        Dimensions.RATIOS.set((4 / 3), { x: 640, y: 480 });
+
+        // 1680 x 1050
+        Dimensions.RATIOS.set((16 / 10), { x: 640, y: 400 });
+
+        // Square ratio
+        Dimensions.RATIOS.set((1 / 1), { x: 640, y: 640 });
+        // Ultrawide
+        Dimensions.RATIOS.set((21 / 9), { x: 840, y: 360 });
+        // Super Ultrawide
+        Dimensions.RATIOS.set((32 / 9), { x: 1280, y: 360 });
+
+        // iPhone ratio
+        // listed as 19.5/9 everywhere but every single aspect ratio calculator rounds
+        Dimensions.RATIOS.set((39 / 18), { x: 780, y: 360 });
+        // Google Pixel aspect ratio
+        Dimensions.RATIOS.set((20 / 9), { x: 800, y: 360 });
+
+
+        /* ref can we lock in */
+        // Pixel 7
+        Dimensions.RATIOS.set((915 / 412), { x: 800, y: 360 });
+        // Galaxy A51/71
+        Dimensions.RATIOS.set((914 / 412), { x: 799, y: 360 });
 
     }
 

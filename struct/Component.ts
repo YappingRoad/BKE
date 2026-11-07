@@ -139,11 +139,16 @@ export interface IArrayComponent<T> extends IComponent<Array<T>> {
 export class ArrayComponent<T> extends Component<Array<T>> implements IArrayComponent<T> {
     constructor(value: Array<T>) {
         super(value);
+
+        // Have to do this other wise they get assigned to the same object in the constructor
+        this.value = Array.of(...this.default);
     }
 
     public static of<T>(value: Array<T>) {
         return new ArrayComponent(value);
     }
+
+
 }
 
 

@@ -17,6 +17,7 @@ import RaylibSound from "./sound/RaylibSound";
 import RaylibPannerSound from "./sound/RaylibPannerSound";
 import RaylibStereoPannerSound from "./sound/RaylibStereoPannerSound";
 import RaylibMusicSound from "./sound/RaylibMusicSound";
+import { RaylibMouseWorkerData } from "./RaylibMouseWorker";
 
 export default class Raylib extends Platform {
     rafCallback: ((ts: number) => void) | null = null;
@@ -25,6 +26,13 @@ export default class Raylib extends Platform {
         super();
 
         Main.init()
+
+        const inputWorker = new Worker(__dirname + "/RaylibMouseWorker.js");
+        inputWorker.on("message", (data: RaylibMouseWorkerData) => {
+
+            Input.MOUSE.mousePoll(data.x, data.y, data.buttons)
+        })
+
 
 
     }
@@ -43,8 +51,8 @@ export default class Raylib extends Platform {
     }
 
 
-    getMemoryUsed(): number {
-        return 0;
+    override getMemoryUsed(): number {
+        return process.memoryUsage().rss;
     }
 
     getStorage(): IStorage {
@@ -63,17 +71,15 @@ export default class Raylib extends Platform {
         setImmediate(() => {
             this.rafCallback = callback;
 
-            Input.MOUSE.mousePoll(r.GetMouseX(), r.GetMouseY(), {
-                left: r.IsMouseButtonDown(r.MOUSE_BUTTON_LEFT),
-                middle: r.IsMouseButtonDown(r.MOUSE_BUTTON_MIDDLE),
-                right: r.IsMouseButtonDown(r.MOUSE_BUTTON_RIGHT),
-                back: r.IsMouseButtonDown(r.MOUSE_BUTTON_BACK),
-                forward: r.IsMouseButtonDown(r.MOUSE_BUTTON_FORWARD),
-            })
+
+
+
+
 
             this.renderer.newFrame()
 
         })
+
 
     }
 
