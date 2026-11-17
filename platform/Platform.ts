@@ -46,6 +46,9 @@ export interface IStorage {
 
 export default class Platform {
 
+    onKeyDown: Callback<string> = new Callback()
+    onKeyUp: Callback<string> = new Callback()
+
     constructor() {
         this.setPlatform()
     }
@@ -135,9 +138,18 @@ export default class Platform {
         return true;
     }
 
-    onKeyDown: Callback<string> = new Callback()
-    onKeyUp: Callback<string> = new Callback()
 
+    getFullscreen():boolean {
+        return false;
+    }
+
+    setFullscreen(b:boolean) {
+        
+    }
+
+    toggleFullscreen() {
+        this.setFullscreen(!this.getFullscreen())
+    }
 
     public static getCurrent(): Platform {
         return (globalThis as any)._BK_PLATFORM;

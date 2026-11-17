@@ -514,6 +514,20 @@ export default class Web extends Platform {
             });
         });
     }
+
+    override getFullscreen(): boolean {
+        return document.fullscreenElement === null;
+    }
+
+
+    override setFullscreen(b: boolean): void {
+        if (b) {
+            document.getElementById("canvasholder")?.requestFullscreen()
+        }
+        else {
+            document.exitFullscreen()
+        }
+    }
 }
 
 function initialize() {

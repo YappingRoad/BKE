@@ -18,11 +18,15 @@ import Platform from "./platform/Platform";
 import SoundMixer from "./audio/SoundMixer";
 import BouncyBill from "../game/objects/BouncyBill";
 import Graphic from "./graphic/Graphic";
+import { Actions } from "../game/plugins/Actions";
 
 
 export default class BKE {
     // Entry point for literally everything (except platform, that is initialized before this)
+    static actions:Actions;
     public static init() {
+        BKE.actions = new Actions();
+
         StorageHandler.init();
         Input.init();
 

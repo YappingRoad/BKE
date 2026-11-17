@@ -1,7 +1,6 @@
 import BKE from "../BKE";
 import Callback from "../Callback";
 import AssetLoader from "../registries/AssetLoader";
-import ArrayUtil from "../utilities/ArrayUtil";
 import MathUtil from "../utilities/MathUtil";
 import Controller, { ControllerType } from "./devices/Controller";
 import DualSense from "./devices/controller/DualSense";

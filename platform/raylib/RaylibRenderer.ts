@@ -23,12 +23,13 @@ export class RaylibRenderer implements IRenderer {
         const screenWidth = 640;
         const screenHeight = 360;
         r.SetWindowState(r.FLAG_WINDOW_RESIZABLE | r.FLAG_WINDOW_HIGHDPI)
-
         r.InitWindow(screenWidth, screenHeight, "Bill Kolumbert")
         // r.SetTargetFPS(9999)
         r.SetExitKey(-1)
-        // r.HideCursor()
+        r.HideCursor()
+        const icon = r.LoadImage("assets/manifest/electron/icon.png");
 
+        r.SetWindowIcon(icon)
     }
 
     private dimensions: Vector2 = Vector2.zero()
@@ -58,7 +59,7 @@ export class RaylibRenderer implements IRenderer {
         this.dimensions.y = Math.ceil(Dimensions.GAME_HEIGHT * ratio);
 
         r.BeginDrawing()
-        r.BeginMode2D({ offset: { x: (r.GetScreenWidth() - this.dimensions.x) / 2, y: (r.GetScreenHeight() - this.dimensions.y) / 2 }, target: { x: 0, y: 0 }, rotation: 0, zoom: 1.0 })
+        r.BeginMode2D({ offset: { x: (this.screenSize.x - this.dimensions.x) / 2, y: (this.screenSize.y - this.dimensions.y) / 2 }, target: { x: 0, y: 0 }, rotation: 0, zoom: 1.0 })
 
         r.ClearBackground(r.BLACK)
         const rafCallback = (Platform.getCurrent() as Raylib).rafCallback;
@@ -186,7 +187,7 @@ export class RaylibRenderer implements IRenderer {
         const dimensions = this.getCanvasDimensions();
         const xScale = dimensions.x / Dimensions.GAME_WIDTH;
         const yScale = dimensions.y / Dimensions.GAME_HEIGHT;
-        data.size *= (xScale + yScale) / 2;
+        data.size *= ((xScale + yScale) / 2);
         x *= xScale;
         y *= yScale;
         if (data.dropShadow != undefined) {
@@ -221,6 +222,10 @@ export class RaylibRenderer implements IRenderer {
     }
 
     measureText(text: string, data: TextDrawData): Vector2 {
+        // const dimensions = this.getCanvasDimensions();
+        // const xScale = dimensions.x / Dimensions.GAME_WIDTH;
+        // const yScale = dimensions.y / Dimensions.GAME_HEIGHT;
+        // data.size *= ((xScale + yScale) / 2) * 1.25;
         // throw new Error("Method not implemented.");
         return this.measureTextRaw(text, data)
 
